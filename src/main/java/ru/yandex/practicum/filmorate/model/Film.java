@@ -13,6 +13,6 @@ public class Film {
     private @NotNull(groups = Marker.OnUpdate.class) Long id;
     private @NotBlank String name;
     private @Size(max = 200) String description;
-    private @YearOfRelease LocalDate releaseDate;
+    private @YearOfRelease(date = "1999-12-27") LocalDate releaseDate;
     private @Positive int duration;
 }

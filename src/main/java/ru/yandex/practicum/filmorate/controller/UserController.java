@@ -42,9 +42,7 @@ public class UserController {
     public User update(@Valid @RequestBody User newUser) {
         log.info("Обновление пользователя: start");
         if (!users.containsKey(newUser.getId())) {
-            //Вопрос, я же правильно понимаю что строчка с логированием избыточна,
-            // потому что ошибка и так будет записана в лог?
-            //log.warn("Пользователь с id - {} не найден", newUser.getId());
+            log.warn("Пользователь с id - {} не найден", newUser.getId());
             throw new NotFoundException("Пользователь с указанным id не найден");
         }
         newUser.emptyName();

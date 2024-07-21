@@ -21,4 +21,5 @@ public @interface YearOfRelease {
     Class<?>[] groups() default { };
 
     Class<? extends Payload>[] payload() default { };
+    String date() default "1895-12-27";
 }

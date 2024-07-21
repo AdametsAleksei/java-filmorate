@@ -40,6 +40,7 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film newFilm) {
         log.info("Обновление фильма: start");
         if (!films.containsKey(newFilm.getId()))  {
+            log.warn("Фильм с id - {} не найден", newFilm.getId());
             throw new NotFoundException("Фильм с указанным id не найден");
         }
         films.put(newFilm.getId(), newFilm);
