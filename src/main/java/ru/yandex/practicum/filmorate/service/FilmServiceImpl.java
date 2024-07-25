@@ -12,12 +12,13 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class FilmServiceImpl {
+public class FilmServiceImpl implements FilmService {
     private final FilmRepository films;
     private final UserRepository users;
     private Long id = 0L;
     private final Map<Film, Set<Long>> likes = new HashMap<>();
 
+    @Override
     public void addLike(Long filmID, Long userID) {
         get(filmID);
         checkUser(userID);
@@ -25,6 +26,7 @@ public class FilmServiceImpl {
         whoLike.add(userID);
     }
 
+    @Override
     public void deleteLike(Long filmID, Long userID) {
         get(filmID);
         checkUser(userID);
@@ -37,6 +39,7 @@ public class FilmServiceImpl {
     }
 
 //    Не понимаю как более элегантно это сделать:(
+    @Override
     public Set<Film> getPopular(int count) {
         Map<Film, Integer> mapSort = new HashMap<>();
         for (Map.Entry<Film, Set<Long>> filmSetEntry : likes.entrySet()) {
@@ -51,31 +54,37 @@ public class FilmServiceImpl {
         return mapReturn.keySet();
     }
 
+    @Override
     public Collection<Film> getAll() {
         return films.getAll();
     }
 
+    @Override
     public Film create(Film film) {
         film.setId(getNextId());
         films.add(film);
         return film;
     }
 
+    @Override
     public Film update(Film newFilm) {
         get(newFilm.getId());
         films.add(newFilm);
         return newFilm;
     }
 
+    @Override
     public User checkUser(Long userID) {
         return users.get(userID).orElseThrow(() -> new NotFoundException(
                 "Пользователь c ID - " + userID + " не найден"));
     }
 
+    @Override
     public Film get(Long filmID) {
        return films.get(filmID).orElseThrow(() -> new NotFoundException("Фильм с ID - " + filmID + " не найден"));
     }
 
+    @Override
     public Long getNextId() {
         return ++id;
     }

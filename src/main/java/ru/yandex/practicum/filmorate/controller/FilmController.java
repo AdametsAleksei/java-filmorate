@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 import ru.yandex.practicum.filmorate.validation.Marker;
 
@@ -19,7 +20,7 @@ import java.util.Set;
 @Validated
 @RequiredArgsConstructor
 public class FilmController {
-    private final FilmServiceImpl filmService;
+    private final FilmService filmService;
 
     @GetMapping("popular")
     public Set<Film> getPopular(@Min(0) @RequestParam(defaultValue = "10", name = "count") int count) {
