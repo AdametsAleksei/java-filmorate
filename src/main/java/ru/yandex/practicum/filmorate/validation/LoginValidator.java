@@ -10,6 +10,6 @@ public class LoginValidator implements ConstraintValidator<Login, String> {
         if (value == null) {
             return false;
         }
-        return !value.contains(" ");
+        return !(value.contains(" ") | value.isEmpty());
     }
 }
