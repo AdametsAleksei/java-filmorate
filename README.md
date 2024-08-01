@@ -2,4 +2,4 @@
 ### Author:
 - Adamets Aleksei
 ## Database schema:
-![Database schema](https://github.com/AdametsAleksei/java-filmorate/blob/main/DatabaseSchema.png)
+![Database schema](https://github.com/AdametsAleksei/java-filmorate/blob/main/DatabaseSchemaIteration1.png)
