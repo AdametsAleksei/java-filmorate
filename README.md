@@ -7,7 +7,7 @@
 ### Получение списка топ-10 (по популярности фильмов):
 ```
 SELECT films.name,
-       SUM(popular.user_id) AS num_likes
+       SUM(popular.user_id) AS sum_likes
 FROM films
 LEFT OUTER JOIN popular ON films.film_id=popular.film_id
 GROUP BY films.name
