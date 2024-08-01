@@ -2,7 +2,7 @@
 ### Author:
 - Adamets Aleksei
 ## Database schema:
-![Database schema](https://github.com/AdametsAleksei/java-filmorate/blob/main/DatabaseSchemaIteration1.png)
+![Database schema](https://github.com/AdametsAleksei/java-filmorate/blob/main/DatabaseSchemaIteration2.png)
 
 ### Получение списка топ-10 (по популярности фильмов):
 ```
