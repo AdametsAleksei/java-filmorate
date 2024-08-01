@@ -4,7 +4,7 @@
 ## Database schema:
 ![Database schema](https://github.com/AdametsAleksei/java-filmorate/blob/main/DatabaseSchemaIteration4.png)
 
-### Получение списка топ-10 (по популярности фильмов):
+### Top 10 movies by popylarity:
 ```
 SELECT films.name,
        SUM(popular.user_id) AS sum_likes
@@ -15,7 +15,7 @@ ORDER BY SUM(popular.user_id) DESC
 LIMIT 10;
 ```
 
-### Получение жанров для фильмов :
+### Get genres for films:
 ```
 SELECT gen.name AS genre_name,
        film.name AS film_name
