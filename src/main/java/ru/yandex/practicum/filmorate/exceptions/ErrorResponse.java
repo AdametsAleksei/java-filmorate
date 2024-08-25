@@ -1,10 +1,9 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.exceptions;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//Странно ведет себя gitHub
 @Getter
 @Setter
 @NoArgsConstructor

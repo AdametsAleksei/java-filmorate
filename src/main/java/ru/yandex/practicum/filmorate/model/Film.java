@@ -1,18 +1,26 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.validation.Marker;
 import ru.yandex.practicum.filmorate.validation.annotation.YearOfRelease;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 
 @Data
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Film {
     private @NotNull(groups = Marker.OnUpdate.class) Long id;
     private @NotBlank String name;
     private @Size(max = 200) String description;
-    private @YearOfRelease(date = "1895-12-27") LocalDate releaseDate;
-    private @Positive int duration;
+    private @YearOfRelease LocalDate releaseDate;
+    private @Positive Integer duration;
+    private @NotNull Mpa mpa;
+    private @Builder.Default LinkedHashSet<Genre> genres = new LinkedHashSet<>();
 }
