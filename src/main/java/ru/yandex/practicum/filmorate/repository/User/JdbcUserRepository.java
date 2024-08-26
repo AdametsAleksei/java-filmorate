@@ -94,14 +94,12 @@ public class JdbcUserRepository extends BaseDbRepository<User> implements UserRe
                 USERS_FIND_BY_ID_QUERY,
                 id
         );
-        if (users.isEmpty()) {
-            throw new NotFoundException("Пользователь с id = " + id + " не найден");
-        }
         return Optional.ofNullable(users.getFirst());
     }
 
     @Override
     public User create(User user) {
+        user.emptyName();
         long id = insertGetKey(
                 USERS_INSERT_QUERY,
                 user.getEmail(),
@@ -116,27 +114,24 @@ public class JdbcUserRepository extends BaseDbRepository<User> implements UserRe
 
     @Override
     public User update(User user) {
-        if (user.getId() == null) {
-            throw new NotFoundException("Id пользователя должен быть указан");
+        if (isUserNotExists(user.getId())) {
+            throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
         }
-        if (isUserExists(user.getId())) {
-            update(
-                    USERS_UPDATE_QUERY,
-                    user.getEmail(),
-                    user.getLogin(),
-                    user.getName(),
-                    java.sql.Date.valueOf(user.getBirthday()),
-                    user.getId()
-            );
-            log.info("Пользователь с id = {} обновлен", user.getId());
-            return user;
-        }
-        throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
+        update(
+                USERS_UPDATE_QUERY,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                java.sql.Date.valueOf(user.getBirthday()),
+                user.getId()
+        );
+        log.info("Пользователь с id = {} обновлен", user.getId());
+        return user;
     }
 
     @Override
     public void delete(Long id) {
-        if (!isUserExists(id))
+        if (isUserNotExists(id))
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         delete(USERS_DELETE, id);
         log.info("Пользователь с id = {} удален", id);
@@ -144,10 +139,10 @@ public class JdbcUserRepository extends BaseDbRepository<User> implements UserRe
 
     @Override
     public void addToFriends(Long id, Long friendId) {
-        if (!isUserExists(id)) {
+        if (isUserNotExists(id)) {
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         }
-        if (!isUserExists(friendId)) {
+        if (isUserNotExists(friendId)) {
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден");
         }
         insert(USERS_ADD_TO_FRIENDS_QUERY, id, friendId);
@@ -156,10 +151,10 @@ public class JdbcUserRepository extends BaseDbRepository<User> implements UserRe
 
     @Override
     public void deleteFromFriends(Long id, Long friendId) {
-        if (!isUserExists(id)) {
+        if (isUserNotExists(id)) {
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         }
-        if (!isUserExists(friendId)) {
+        if (isUserNotExists(friendId)) {
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден");
         }
         delete(USERS_DELETE_FROM_FRIENDS_QUERY, id, friendId);
@@ -168,7 +163,7 @@ public class JdbcUserRepository extends BaseDbRepository<User> implements UserRe
 
     @Override
     public Collection<User> findAllFriends(Long id) {
-        if (!isUserExists(id))
+        if (isUserNotExists(id))
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         log.info("Поиск друзей пользователя с id = {}", id);
         return findMany(USERS_FIND_ALL_FRIENDS_QUERY, id);
@@ -176,18 +171,17 @@ public class JdbcUserRepository extends BaseDbRepository<User> implements UserRe
 
     @Override
     public Collection<User> findCommonFriends(Long id, Long otherId) {
-        if (!isUserExists(id)) {
+        if (isUserNotExists(id)) {
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         }
-        if (!isUserExists(otherId)) {
+        if (isUserNotExists(otherId)) {
             throw new NotFoundException("Пользователь с id = " + otherId + " не найден");
         }
         log.info("Поиск общих друзей пользователя с id = {} и пользователя с id = {}", id, otherId);
         return findMany(USERS_FIND_COMMON_FRIENDS_QUERY, id, id, otherId, otherId);
     }
 
-    @Override
-    public boolean isUserExists(Long id) {
-        return findOne(USERS_FIND_BY_ID_QUERY, id).isPresent();
+    private boolean isUserNotExists(Long id) {
+        return findOne(USERS_FIND_BY_ID_QUERY, id).isEmpty();
     }
 }

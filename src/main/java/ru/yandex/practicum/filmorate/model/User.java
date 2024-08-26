@@ -20,4 +20,10 @@ public class User {
     private @Login String login;
     private String name;
     private @Past LocalDate birthday;
+
+    public void emptyName() {
+        if (name == null || name.isBlank()) {
+            name = login;
+        }
+    }
 }

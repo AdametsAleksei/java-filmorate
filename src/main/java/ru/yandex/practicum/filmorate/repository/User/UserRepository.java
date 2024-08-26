@@ -25,6 +25,4 @@ public interface UserRepository {
 
     Collection<User> findCommonFriends(Long id, Long otherId);
 
-    boolean isUserExists(Long id);
-
 }
