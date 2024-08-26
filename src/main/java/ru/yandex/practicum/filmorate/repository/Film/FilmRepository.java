@@ -21,6 +21,4 @@ public interface FilmRepository {
     void deleteLike(Long id, Long userId);
 
     Collection<Film> getPopular(Long count);
-
-    boolean isFilmExists(Long id);
 }

@@ -72,10 +72,6 @@ public class JdbcFilmRepository extends BaseDbRepository<Film> implements FilmRe
             ORDER BY count DESC
             LIMIT ?;
             """;
-    private static final String FILMS_DELETE_FILMS_GENRE_QUERY = """
-            DELETE FROM FILM_GENRE
-            WHERE FILM_ID = ?;
-            """;
     private static final String FILMS_INSERT_FILMS_GENRE_QUERY = """
             INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID)
             VALUES (?, ?);
@@ -138,36 +134,26 @@ public class JdbcFilmRepository extends BaseDbRepository<Film> implements FilmRe
 
     @Override
     public Film update(Film film) {
-        if (film.getId() == null) {
-            throw new NotFoundException("Id фильма должен быть указан");
+        if (isFilmNotExists(film.getId())) {
+            throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
         }
-        if (isFilmExists(film.getId())) {
-            update(
-                    FILMS_UPDATE_QUERY,
-                    film.getName(),
-                    film.getDescription(),
-                    Date.valueOf(film.getReleaseDate()),
-                    film.getDuration(),
-                    film.getMpa().getId(),
-                    film.getId()
-            );
-            delete(
-                    FILMS_DELETE_FILMS_GENRE_QUERY,
-                    film.getId()
-            );
-            updateGenres(film.getGenres(), film.getId());
-            delete(
-                    film.getId()
-            );
-            log.info("Фильм с id = {} обновлен", film.getId());
-            return film;
-        }
-        throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
+        update(
+                FILMS_UPDATE_QUERY,
+                film.getName(),
+                film.getDescription(),
+                Date.valueOf(film.getReleaseDate()),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId()
+        );
+        updateGenres(film.getGenres(), film.getId());
+        log.info("Фильм с id = {} обновлен", film.getId());
+        return film;
     }
 
     @Override
     public void delete(Long id) {
-        if (!isFilmExists(id)) {
+        if (isFilmNotExists(id)) {
             throw new NotFoundException("Фильм с id = " + id + " не найден");
         }
         delete(FILMS_DELETE, id);
@@ -176,23 +162,19 @@ public class JdbcFilmRepository extends BaseDbRepository<Film> implements FilmRe
 
     @Override
     public void addLike(Long id, Long userId) {
-        if (!isFilmExists(id)) {
+        if (isFilmNotExists(id)) {
             throw new NotFoundException("Фильм с id = " + id + " не найден");
         }
-        Film film = findOne(FILMS_FIND_BY_ID_QUERY, id).orElse(null);
         insert(FILMS_ADD_LIKE_QUERY, id, userId);
-        assert film != null;
         log.info("Пользователь с id = {} поставил лайк фильму id = {}", userId, id);
     }
 
     @Override
     public void deleteLike(Long id, Long userId) {
-        if (!isFilmExists(id)) {
+        if (isFilmNotExists(id)) {
             throw new NotFoundException("Фильм с id = " + id + " не найден");
         }
-        Film film = findOne(FILMS_FIND_BY_ID_QUERY, id).orElse(null);
         delete(FILMS_DELETE_LIKE_QUERY, id, userId);
-        assert film != null;
         log.info("Пользователь с id = {} удалил лайк фильму id = {}", userId, id);
     }
 
@@ -202,12 +184,11 @@ public class JdbcFilmRepository extends BaseDbRepository<Film> implements FilmRe
         return findMany(FILMS_GET_POPULAR_QUERY, count);
     }
 
-    @Override
-    public boolean isFilmExists(Long id) {
-        return findOne(FILMS_FIND_BY_ID_QUERY, id).isPresent();
+    private boolean isFilmNotExists(Long id) {
+        return findOne(FILMS_FIND_BY_ID_QUERY, id).isEmpty();
     }
 
-    public void checkGenresExists(Collection<Genre> genres) {
+    private void checkGenresExists(Collection<Genre> genres) {
         if (genres.isEmpty()) {
             return;
         }
