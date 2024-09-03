@@ -7,11 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.validation.Marker;
 
 import java.util.Collection;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/films")
@@ -21,14 +20,25 @@ import java.util.Set;
 public class FilmController {
     private final FilmService filmService;
 
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable long id) {
+        return filmService.getById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable long id) {
+        filmService.delete(id);
+        log.info("Удален фильм с id {}", id);
+    }
+
     @GetMapping("popular")
-    public Set<Film> getPopular(@Min(0) @RequestParam(defaultValue = "10", name = "count") int count) {
+    public Collection<Film> getPopular(@Min(0) @RequestParam(defaultValue = "10", name = "count") Long count) {
         log.info("Запрошены популярные фильмы");
         return filmService.getPopular(count);
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public Collection<Film> getAll() {
         log.info("Запрошен список всех фильмов");
         return filmService.getAll();
     }
@@ -36,7 +46,7 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Создание фильма: start");
-        film = filmService.create(film);
+        film = filmService. create(film);
         log.info("Создан фильм - {}", film);
         return film;
     }
@@ -54,11 +64,9 @@ public class FilmController {
         log.info("Обновление фильма: start");
         filmService.update(newFilm);
         log.info("Фильм с id - {}, обновлен", newFilm.getId());
-        log.info("Обновление фильма: success");
         return newFilm;
     }
 
-//    DELETE /films/{id}/like/{userId}
     @DeleteMapping("{filmID}/like/{userID}")
     public void deleteLike(@PathVariable Long filmID, @PathVariable Long userID) {
         log.info("DeleteLike start");

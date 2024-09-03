@@ -1,15 +1,19 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.validation.Marker;
 import ru.yandex.practicum.filmorate.validation.annotation.Login;
 
 import java.time.LocalDate;
 
 @Data
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     private @NotNull(groups = Marker.OnUpdate.class) Long id;
     private @Email String email;
@@ -18,7 +22,7 @@ public class User {
     private @Past LocalDate birthday;
 
     public void emptyName() {
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             name = login;
         }
     }

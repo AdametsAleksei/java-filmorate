@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.validation.Marker;
 
 import java.util.Collection;
@@ -20,8 +20,14 @@ import java.util.Collection;
 public class UserController {
     private final UserService userService;
 
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable long id) {
+        log.info("Удален пользователь с ID - {}", id);
+        userService.delete(id);
+    }
+
     @GetMapping("/{userID}")
-    public User get(@PathVariable("userID") long id) {
+    public User getById(@PathVariable("userID") long id) {
         log.info("Запрошен пользователь с ID - {}", id);
         return userService.get(id);
     }
@@ -39,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> findAll() {
+    public Collection<User> getAll() {
         log.info("Запрошен список всех пользователей");
         return userService.findAll();
     }
