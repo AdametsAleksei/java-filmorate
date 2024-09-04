@@ -20,12 +20,6 @@ import java.util.Collection;
 public class UserController {
     private final UserService userService;
 
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable long id) {
-        log.info("Удален пользователь с ID - {}", id);
-        userService.delete(id);
-    }
-
     @GetMapping("/{userID}")
     public User getById(@PathVariable("userID") long id) {
         log.info("Запрошен пользователь с ID - {}", id);

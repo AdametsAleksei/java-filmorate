@@ -10,5 +10,5 @@ public interface MpaRepository {
 
     Optional<Mpa> getById(int id);
 
-    boolean isMpaExists(int id);
+    void isMpaExists(int id);
 }

@@ -13,8 +13,6 @@ public interface FilmService {
 
     Film getById(long id);
 
-    void delete(long id);
-
     void addLike(Long id, Long userId);
 
     void deleteLike(Long id, Long userId);
