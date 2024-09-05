@@ -118,19 +118,25 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public Map<Long, Film> getPopular(Long count) {
         String sql = """
-                     SELECT *
-                     FROM (
-                     SELECT p.FILM_ID,
-                            COUNT(p.FILM_ID) AS countlike
-                     FROM POPULAR AS p
-                     GROUP BY FILM_ID
-                     ORDER BY COUNT(FILM_ID) DESC
-                     LIMIT :count
-                     ) AS popular
-                     JOIN FILMS AS f ON popular.FILM_ID = f.FILM_ID
-                     JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
-                     JOIN FILM_GENRE AS fg ON fg.FILM_ID = f.FILM_ID
-                     JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID;
+                     SELECT COUNT(p.user_id) AS sum_likes,
+                             f.FILM_ID,
+                             f.NAME,
+                             f.DESCRIPTION,
+                             f.RELEASE_DATE,
+                             f.DURATION,
+                             f.MPA_ID,
+                             r.MPA_NAME,
+                             fg.GENRE_ID,
+                             g.GENRE_NAME
+                     FROM FILMS AS f
+                             LEFT JOIN POPULAR AS p ON f.film_id=p.film_id
+                             LEFT JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                             LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
+                             LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                     GROUP BY f.name, f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE,
+                                                 f.DURATION, f.MPA_ID, r.MPA_NAME, fg.GENRE_ID, g.GENRE_NAME
+                     ORDER BY COUNT(p.user_id) DESC
+                     LIMIT :count;
                      """;
         SqlParameterSource parameter = new MapSqlParameterSource("count", count);
         return jdbc.query(sql, parameter, filmsExtractor);
