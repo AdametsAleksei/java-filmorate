@@ -46,11 +46,11 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("{filmID}/like/{userID}")
-    public void like(@PathVariable Long filmID, @PathVariable Long userID) {
+    @PutMapping("{filmId}/like/{userId}")
+    public void like(@PathVariable Long filmId, @PathVariable Long userId) {
         log.info("Like start");
-        filmService.addLike(filmID, userID);
-        log.info("Добавлен лайк к фильму c ID - {}, пользователем с ID - {}", filmID, userID);
+        filmService.addLike(filmId, userId);
+        log.info("Добавлен лайк к фильму c ID - {}, пользователем с ID - {}", filmId, userId);
     }
 
     @PutMapping
@@ -58,7 +58,6 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film newFilm) {
         log.info("Обновление фильма: start");
         filmService.update(newFilm);
-        log.info("Фильм с id - {}, обновлен", newFilm.getId());
         return newFilm;
     }
 
@@ -76,5 +75,11 @@ public class FilmController {
         List<Film> sortedFilms = filmService.getSortedDirectorsFilms(directorId, sortBy);
         log.info("Вывод отсортированных фильмов отправлен");
         return sortedFilms;
+    }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Запрошены общие фильмы");
+        return filmService.getCommonFilms(userId, friendId);
     }
 }
