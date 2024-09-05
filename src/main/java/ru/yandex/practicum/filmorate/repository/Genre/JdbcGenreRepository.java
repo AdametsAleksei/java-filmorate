@@ -43,20 +43,20 @@ public class JdbcGenreRepository implements GenreRepository {
 
     @Override
     public void saveGenre(Film film) {
+        Long filmId = film.getId();
         String sqlDelete = """
                 DELETE FROM FILM_GENRE
                 WHERE FILM_ID = :film_id;
                 """;
         SqlParameterSource parameterDelete = new MapSqlParameterSource("film_id", film.getId());
         jdbc.update(sqlDelete, parameterDelete);
-        Long id = film.getId();
         Set<Genre> genres = film.getGenres();
         SqlParameterSource[] batch = new MapSqlParameterSource[genres.size()];
         int count = 0;
         for (Genre genre : genres) {
             isGenreNotExist(genre.getId());
             SqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue("film_id", id)
+                    .addValue("film_id", filmId)
                     .addValue("genre_id", genre.getId());
             batch[count++] = parameter;
         }

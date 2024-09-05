@@ -38,7 +38,6 @@ public class JdbcUserRepository implements UserRepository {
                 WHERE USER_ID = :user_id;
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource().addValue("user_id", id);
-        System.out.println(jdbc.query(sql, parameter, userExtractor));
         return Optional.ofNullable(jdbc.query(sql, parameter, userExtractor));
     }
 
