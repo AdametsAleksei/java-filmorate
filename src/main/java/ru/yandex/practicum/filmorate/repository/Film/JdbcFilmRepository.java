@@ -31,7 +31,9 @@ public class JdbcFilmRepository implements FilmRepository {
                      FROM FILMS AS f
                      LEFT JOIN RATING_MPA AS r ON  f.MPA_ID = r.MPA_ID
                      LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
-                     LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID;
+                     LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                     LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
+                     LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID;
                      """;
         return jdbc.query(sql, Map.of(), filmsExtractor);
     }
@@ -44,6 +46,8 @@ public class JdbcFilmRepository implements FilmRepository {
                      LEFT JOIN RATING_MPA AS r ON  f.MPA_ID = r.MPA_ID
                      LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
                      LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                     LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
+                     LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID
                      WHERE f.FILM_ID = :film_id;
                      """;
         SqlParameterSource parameter = new MapSqlParameterSource("film_id", id);
@@ -118,19 +122,29 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public Map<Long, Film> getPopular(Long count) {
         String sql = """
-                     SELECT *
-                     FROM (
-                     SELECT p.FILM_ID,
-                            COUNT(p.FILM_ID) AS countlike
-                     FROM POPULAR AS p
-                     GROUP BY FILM_ID
-                     ORDER BY COUNT(FILM_ID) DESC
-                     LIMIT :count
-                     ) AS popular
-                     JOIN FILMS AS f ON popular.FILM_ID = f.FILM_ID
-                     JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
-                     JOIN FILM_GENRE AS fg ON fg.FILM_ID = f.FILM_ID
-                     JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID;
+                     SELECT COUNT(p.user_id) AS sum_likes,
+                             f.FILM_ID,
+                             f.NAME,
+                             f.DESCRIPTION,
+                             f.RELEASE_DATE,
+                             f.DURATION,
+                             f.MPA_ID,
+                             r.MPA_NAME,
+                             fg.GENRE_ID,
+                             g.GENRE_NAME,
+                             d.DIRECTOR_ID,
+                             d.DIRECTOR_NAME
+                     FROM FILMS AS f
+                             LEFT JOIN POPULAR AS p ON f.film_id=p.film_id
+                             LEFT JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                             LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
+                             LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                             LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
+                             LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+                     GROUP BY f.name, f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE,
+                                                 f.DURATION, f.MPA_ID, r.MPA_NAME, fg.GENRE_ID, g.GENRE_NAME
+                     ORDER BY COUNT(p.user_id) DESC
+                     LIMIT :count;
                      """;
         SqlParameterSource parameter = new MapSqlParameterSource("count", count);
         return jdbc.query(sql, parameter, filmsExtractor);
@@ -143,6 +157,70 @@ public class JdbcFilmRepository implements FilmRepository {
         }
     }
 
+    @Override
+    public Collection<Film> getSortedDirectorsFilmsByLikes(Long directorId) {
+        String sql = """
+        SELECT
+        f.*,
+        fd.*,
+        g.*,
+        d.*,
+        r.MPA_ID AS MPA_ID,
+        r.MPA_NAME AS MPA_NAME,
+        COUNT(p.FILM_ID) AS count
+        FROM
+        FILMS AS f
+        LEFT JOIN RATING_MPA AS r ON  f.MPA_ID = r.MPA_ID
+        LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
+        LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+        LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
+        LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+        LEFT JOIN POPULAR p on f.FILM_ID = p.FILM_ID
+        WHERE
+        f.FILM_ID IN (
+                SELECT FILM_ID
+        FROM FILM_DIRECTOR
+        WHERE DIRECTOR_ID = :director_id
+        )
+        GROUP BY f.FILM_ID , FD.DIRECTOR_ID
+        ORDER BY count DESC;
+        """;
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("director_id", directorId);
+        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
+    }
 
 
+    @Override
+    public Collection<Film> getSortedDirectorsFilmsByYear(Long directorId) {
+        String sql = """
+        SELECT
+        f.*,
+        fd.*,
+        g.*,
+        d.*,
+        r.MPA_ID AS MPA_ID,
+        r.MPA_NAME AS MPA_NAME,
+        COUNT(p.FILM_ID) AS count
+        FROM
+        FILMS AS f
+        LEFT JOIN RATING_MPA AS r ON  f.MPA_ID = r.MPA_ID
+        LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
+        LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+        LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
+        LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+        LEFT JOIN POPULAR p on f.FILM_ID = p.FILM_ID
+        WHERE
+        f.FILM_ID IN (
+                SELECT FILM_ID
+        FROM FILM_DIRECTOR
+        WHERE DIRECTOR_ID = :director_id
+        )
+        GROUP BY f.FILM_ID , FD.DIRECTOR_ID
+        ORDER BY f.RELEASE_DATE;
+        """;
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                 .addValue("director_id", directorId);
+        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
+    }
 }

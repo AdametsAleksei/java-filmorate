@@ -23,4 +23,5 @@ public class Film {
     private @Positive Integer duration;
     private @NotNull Mpa mpa;
     private @Builder.Default LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+    private LinkedHashSet<Director> directors = new LinkedHashSet<>();
 }
