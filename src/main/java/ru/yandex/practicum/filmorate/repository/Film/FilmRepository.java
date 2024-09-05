@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.repository.Film;
 import ru.yandex.practicum.filmorate.model.Film;
 
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,4 +23,6 @@ public interface FilmRepository {
     Map<Long, Film> getPopular(Long count);
 
     void isFilmNotExists(Long id);
+
+    Collection<Film> getUserFilm(Long userId);
 }

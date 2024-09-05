@@ -58,6 +58,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public void addLike(Long filmID, Long userId) {
         films.isFilmNotExists(filmID);
+        users.isUserNotExists(userId);
         films.addLike(filmID, userId);
         log.info("Пользователь с id = {} поставил лайк фильму id = {}", userId, filmID);
     }
@@ -76,4 +77,18 @@ public class FilmServiceImpl implements FilmService {
         return films.getPopular(count).values().stream().toList();
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        users.isUserNotExists(userId);
+        users.isUserNotExists(friendId);
+        try {
+            List<Film> userFilms = new ArrayList<>(films.getUserFilm(userId).stream().toList());
+            List<Film> friendFilms = new ArrayList<>(films.getUserFilm(friendId).stream().toList());
+            friendFilms.retainAll(userFilms);
+            log.info("Получены общие фильмы для пользователя с id = {} и пользователя с id = {}", userId, friendId);
+            return friendFilms;
+        } catch (NullPointerException e) {
+            throw new NotFoundException("У пользователей нет общих фильмов");
+        }
+    }
 }
