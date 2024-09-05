@@ -137,6 +137,7 @@ public class JdbcFilmRepository implements FilmRepository {
                                              f.DURATION, f.MPA_ID, r.MPA_NAME, fg.GENRE_ID, g.GENRE_NAME
                     ORDER BY COUNT(p.user_id) DESC
                     LIMIT :count;
+                    """;
         SqlParameterSource parameter = new MapSqlParameterSource("count", count);
         return jdbc.query(sql, parameter, filmsExtractor);
     }
