@@ -42,12 +42,12 @@ public class FilmServiceImpl implements FilmService {
         }
 
         films.create(film);
+        directorRepository.saveDirectorsToFilm(film);
         if (film.getId() == null) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
         try {
             genreRepository.saveGenre(film);
-            directorRepository.saveDirectorsToFilm(film);
         } catch (NotFoundException e) {
             throw new ValidationException("Такого жанра не существует");
         }
@@ -62,6 +62,7 @@ public class FilmServiceImpl implements FilmService {
         mpaRepository.isMpaExists(film.getMpa().getId());
         films.update(film);
         genreRepository.saveGenre(film);
+        directorRepository.saveDirectorsToFilm(film);
         log.info("Фильм с id = {} обновлен", film.getId());
     }
 

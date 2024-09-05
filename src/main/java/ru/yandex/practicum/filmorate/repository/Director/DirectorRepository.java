@@ -3,14 +3,14 @@ package ru.yandex.practicum.filmorate.repository.Director;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface DirectorRepository {
 
-    Director createDirector(Director director);
+    void createDirector(Director director);
 
-    List<Director> findAllDirectors();
+    Collection<Director> findAllDirectors();
 
     Optional<Director> getDirectorById(Long id);
 

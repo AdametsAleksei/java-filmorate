@@ -34,7 +34,7 @@ public class DirectorController {
     @PostMapping
     public Director create(@RequestBody Director director) {
         log.info("Добавление режиссера: start");
-        director = directorService.createDirector(director);
+        directorService.createDirector(director);
         log.info("Добавлен режиссер - {}", director.getId());
         return director;
     }
@@ -42,7 +42,7 @@ public class DirectorController {
 
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
-        log.info("Попытка удаления режиссера c ID - {}", id);
+        log.info("Удаление режиссера c ID - {}", id);
         directorService.deleteDirector(id);
         log.info("Режиссер c ID - {} удален", id);
     }
@@ -50,7 +50,7 @@ public class DirectorController {
     @PutMapping
     public Director update(@RequestBody Director director) {
         log.info("Обновление режиссера: start");
-        director = directorService.updateDirector(director);
+        directorService.updateDirector(director);
         log.info("Обновлен режиссер - {}", director.getId());
         return director;
     }

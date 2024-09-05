@@ -32,10 +32,10 @@ public class ErrorHandler {
         return new ErrorResponse(e.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
     }
 
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse handleException(final Exception e) {
-//            log.warn("Error", e);
-//            return new ErrorResponse(e.getMessage());
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleException(final Exception e) {
+            log.warn("Error", e);
+            return new ErrorResponse(e.getMessage());
+    }
 }

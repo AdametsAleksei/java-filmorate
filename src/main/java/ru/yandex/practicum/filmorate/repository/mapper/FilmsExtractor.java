@@ -42,7 +42,6 @@ public class FilmsExtractor  implements ResultSetExtractor<Map<Long, Film>> {
             dir.setName(rs.getString("DIRECTOR_NAME"));
             if (dir.getId() > 0) {
                 films.get(rs.getLong("FILM_ID")).getDirectors().add(dir);
-
             }
         }
         return films;

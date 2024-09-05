@@ -21,10 +21,10 @@ public class DirectorServiceImp implements DirectorService {
 
     @Override
     public Director createDirector(Director director) {
-        directorRepository.createDirector(director);
         if (director.getId() == null || director.getName().isBlank()) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
+        directorRepository.createDirector(director);
         return director;
     }
 
