@@ -113,6 +113,7 @@ public class FilmServiceImpl implements FilmService {
         films.isFilmNotExists(filmID);
         films.deleteFilm(filmID);
     }
+
     @Override
     public Collection<Film> getCommonFilms(Long userId, Long friendId) {
         users.isUserNotExists(userId);

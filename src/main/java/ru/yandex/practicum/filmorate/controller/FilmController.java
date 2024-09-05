@@ -88,4 +88,10 @@ public class FilmController {
         log.info("Запрошены общие фильмы");
         return filmService.getCommonFilms(userId, friendId);
     }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Запрошены общие фильмы");
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }

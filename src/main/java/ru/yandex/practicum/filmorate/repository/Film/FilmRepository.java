@@ -31,4 +31,6 @@ public interface FilmRepository {
     Collection<Film> getSortedDirectorsFilmsByYear(Long directorId);
 
     Collection<Film> getUserFilm(Long userId);
+
+    Collection<Film> getUserFilm(Long userId);
 }
