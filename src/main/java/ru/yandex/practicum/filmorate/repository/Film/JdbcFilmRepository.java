@@ -478,4 +478,27 @@ public class JdbcFilmRepository implements FilmRepository {
         SqlParameterSource parameter = new MapSqlParameterSource("user_id", userId);
         return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
+    @Override
+    public Collection<Film> getUserFilm(Long userId) {
+        String sql = """
+                     SELECT p.USER_ID,
+                           f.FILM_ID,
+                           f.NAME,
+                           f.DESCRIPTION,
+                           f.RELEASE_DATE,
+                           f.DURATION,
+                           f.MPA_ID,
+                           r.MPA_NAME,
+                           fg.GENRE_ID,
+                           g.GENRE_NAME
+                     FROM POPULAR AS p
+                     LEFT JOIN FILMS AS f ON p.FILM_ID = f.FILM_ID
+                     LEFT JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                     LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
+                     LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                     WHERE p.USER_ID = :user_id;
+                     """;
+        SqlParameterSource parameter = new MapSqlParameterSource("user_id", userId);
+        return jdbc.query(sql, parameter, filmsExtractor).values();
+    }
 }
