@@ -21,7 +21,7 @@ public class DirectorServiceImp implements DirectorService {
 
     @Override
     public Director createDirector(Director director) {
-        if (director.getName().isBlank()){
+        if (director.getName().isBlank()) {
             throw new ResponseStatusException(HttpStatus.NON_AUTHORITATIVE_INFORMATION, "Пустое имя режиссера");
         }
         directorRepository.createDirector(director);
