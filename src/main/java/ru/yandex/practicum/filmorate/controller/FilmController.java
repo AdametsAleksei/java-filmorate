@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.validation.Marker;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -69,9 +70,11 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public Collection<Film> getSortedDirectorsFilms(@PathVariable("directorId") Long directorId,
-                                                    @RequestParam String sortBy) {
+    public List<Film> getSortedDirectorsFilms(@PathVariable("directorId") Long directorId,
+                                              @RequestParam(value = "sortBy", required = false) String sortBy) {
         log.info("Запрошен вывод отсортированных фильмов");
-        return filmService.getSortedDirectorsFilms(directorId, sortBy);
+        List<Film> sortedFilms = filmService.getSortedDirectorsFilms(directorId, sortBy);
+        log.info("Вывод отсортированных фильмов отправлен");
+        return sortedFilms;
     }
 }

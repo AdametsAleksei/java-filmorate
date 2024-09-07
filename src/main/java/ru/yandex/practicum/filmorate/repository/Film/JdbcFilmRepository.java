@@ -161,12 +161,11 @@ public class JdbcFilmRepository implements FilmRepository {
     public Collection<Film> getSortedDirectorsFilmsByLikes(Long directorId) {
         String sql = """
         SELECT
-        f.*,
-        fd.*,
-        g.*,
-        d.*,
+        f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION,
         r.MPA_ID AS MPA_ID,
         r.MPA_NAME AS MPA_NAME,
+        g.GENRE_ID, g.GENRE_NAME,
+        d.DIRECTOR_ID, d.DIRECTOR_NAME,
         COUNT(p.FILM_ID) AS count
         FROM
         FILMS AS f
@@ -187,7 +186,7 @@ public class JdbcFilmRepository implements FilmRepository {
         """;
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("director_id", directorId);
-        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
+        return (jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 
 
@@ -195,13 +194,11 @@ public class JdbcFilmRepository implements FilmRepository {
     public Collection<Film> getSortedDirectorsFilmsByYear(Long directorId) {
         String sql = """
         SELECT
-        f.*,
-        fd.*,
-        g.*,
-        d.*,
+        f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION,
         r.MPA_ID AS MPA_ID,
         r.MPA_NAME AS MPA_NAME,
-        COUNT(p.FILM_ID) AS count
+        g.GENRE_ID, g.GENRE_NAME,
+        d.DIRECTOR_ID, d.DIRECTOR_NAME
         FROM
         FILMS AS f
         LEFT JOIN RATING_MPA AS r ON  f.MPA_ID = r.MPA_ID
@@ -209,7 +206,6 @@ public class JdbcFilmRepository implements FilmRepository {
         LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
         LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
         LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
-        LEFT JOIN POPULAR p on f.FILM_ID = p.FILM_ID
         WHERE
         f.FILM_ID IN (
                 SELECT FILM_ID
@@ -221,6 +217,6 @@ public class JdbcFilmRepository implements FilmRepository {
         """;
         SqlParameterSource parameter = new MapSqlParameterSource()
                  .addValue("director_id", directorId);
-        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
+        return (jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 }
