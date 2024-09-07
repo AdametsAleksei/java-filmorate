@@ -42,11 +42,11 @@ public class FilmServiceImpl implements FilmService {
         }
 
         films.create(film);
-        directorRepository.saveDirectorsToFilm(film);
         if (film.getId() == null) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
         try {
+            directorRepository.saveDirectorsToFilm(film);
             genreRepository.saveGenre(film);
         } catch (NotFoundException e) {
             throw new ValidationException("Такого жанра не существует");

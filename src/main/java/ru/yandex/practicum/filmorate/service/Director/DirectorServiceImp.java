@@ -22,7 +22,7 @@ public class DirectorServiceImp implements DirectorService {
     @Override
     public Director createDirector(Director director) {
         if (director.getName().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.NON_AUTHORITATIVE_INFORMATION, "Пустое имя режиссера");
+            throw new ResponseStatusException(HttpStatus.NOT_EXTENDED,"Имя режиссера должно быть заполнено");
         }
         directorRepository.createDirector(director);
         if (director.getId() == null) {

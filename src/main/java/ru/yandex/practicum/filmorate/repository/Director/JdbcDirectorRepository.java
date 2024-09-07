@@ -2,15 +2,16 @@ package ru.yandex.practicum.filmorate.repository.Director;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.repository.mapper.DirectorExtractor;
 import ru.yandex.practicum.filmorate.repository.mapper.DirectorRowMapper;
 
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class JdbcDirectorRepository implements DirectorRepository {
     private final NamedParameterJdbcOperations jdbc;
     private final DirectorRowMapper mapper;
+    private final DirectorExtractor extractor;
 
     @Override
     public void createDirector(Director director) {
@@ -47,7 +49,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
                 WHERE DIRECTOR_ID = :director_id;
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource("director_id", id);
-        return Optional.ofNullable(jdbc.queryForObject(sql, parameter, mapper));
+        return Optional.ofNullable(jdbc.query(sql, parameter, extractor));
     }
 
     @Override
@@ -84,21 +86,13 @@ public class JdbcDirectorRepository implements DirectorRepository {
 
     @Override
     public void isDirectorNotExists(Long id) {
-        try {
-            getDirectorById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Режиссер с id = " + id + " не найден");
+        if (getDirectorById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Режиссер с id = " + id + " не найден");
         }
     }
 
     @Override
     public void saveDirectorsToFilm(Film film) {
-        String sqlDelete = """
-                           DELETE FROM FILM_DIRECTOR
-                           WHERE FILM_ID = :film_id;
-                           """;
-        SqlParameterSource parameterDelete = new MapSqlParameterSource("film_id", film.getId());
-        jdbc.update(sqlDelete, parameterDelete);
         Set<Director> directors = film.getDirectors();
         String sql = """
                 INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID)
@@ -110,6 +104,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
                     .addValue("film_id", film.getId())
                     .addValue("director_id", d.getId());
             jdbc.update(sql, parameter);
+
         }
     }
 }
