@@ -87,7 +87,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
 
     @Override
     public void isDirectorNotExists(Long id) {
-            if (getDirectorById(id).isEmpty()){
+        if (getDirectorById(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Режиссер с id = " + id + " не найден");
         }
     }
