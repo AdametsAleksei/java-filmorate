@@ -216,7 +216,7 @@ public class JdbcFilmRepository implements FilmRepository {
         FROM FILM_DIRECTOR
         WHERE DIRECTOR_ID = :director_id
         )
-        GROUP BY f.FILM_ID , FD.DIRECTOR_ID
+        GROUP BY f.FILM_ID , FD.DIRECTOR_ID,f.RELEASE_DATE
         ORDER BY f.RELEASE_DATE;
         """;
         SqlParameterSource parameter = new MapSqlParameterSource()

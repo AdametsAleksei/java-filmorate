@@ -22,7 +22,7 @@ public class DirectorServiceImp implements DirectorService {
     @Override
     public Director createDirector(Director director) {
         directorRepository.createDirector(director);
-        if (director.getId() == null) {
+        if (director.getId() == null || director.getName().isBlank()) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
         return director;
