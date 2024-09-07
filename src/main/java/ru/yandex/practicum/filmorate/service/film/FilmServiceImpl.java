@@ -15,7 +15,7 @@ import ru.yandex.practicum.filmorate.repository.Genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
-import java.util.Collection;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -62,7 +62,6 @@ public class FilmServiceImpl implements FilmService {
         mpaRepository.isMpaExists(film.getMpa().getId());
         films.update(film);
         genreRepository.saveGenre(film);
-        directorRepository.saveDirectorsToFilm(film);
         log.info("Фильм с id = {} обновлен", film.getId());
     }
 
