@@ -60,7 +60,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
         return jdbc.query(sql, mapper);
     }
 
-    public Director updateDirector(Director director) {
+    public void updateDirector(Director director) {
         String sql = """
                 UPDATE DIRECTORS
                 SET "DIRECTOR_NAME" = :director_name
@@ -70,7 +70,6 @@ public class JdbcDirectorRepository implements DirectorRepository {
                 .addValue("director_name", director.getName())
                 .addValue("director_id", director.getId());
         jdbc.update(sql, parameter);
-        return director;
     }
 
     public void deleteDirector(Long id) {

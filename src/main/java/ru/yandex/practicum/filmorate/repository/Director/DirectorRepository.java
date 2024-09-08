@@ -14,7 +14,7 @@ public interface DirectorRepository {
 
     Optional<Director> getDirectorById(Long id);
 
-    Director updateDirector(Director director);
+    void updateDirector(Director director);
 
     void deleteDirector(Long id);
 
