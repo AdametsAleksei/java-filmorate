@@ -69,6 +69,15 @@ public class FilmController {
         log.info("Убран лайк фильма c ID - {}, пользователем с ID - {}", filmID, userID);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> getSortedDirectorsFilms(@PathVariable("directorId") Long directorId,
+                                              @RequestParam(value = "sortBy", required = false) String sortBy) {
+        log.info("Запрошен вывод отсортированных фильмов");
+        List<Film> sortedFilms = filmService.getSortedDirectorsFilms(directorId, sortBy);
+        log.info("Вывод отсортированных фильмов отправлен");
+        return sortedFilms;
+    }
+
     @DeleteMapping("/{filmID}")
     public void deleteFilm(@PathVariable Long filmID) {
         log.info("Удаление фильма по ID - {}", filmID);

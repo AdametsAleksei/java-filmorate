@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.repository.Genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
-
 import java.util.*;
 
 @Slf4j
@@ -96,6 +95,17 @@ public class FilmServiceImpl implements FilmService {
         return films.getPopular(count).values().stream().toList();
     }
 
+    @Override
+    public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
+        directorRepository.isDirectorNotExists(directorId);
+        if (sortBy.equals("year")) {
+            return films.getSortedDirectorsFilmsByYear(directorId).stream().toList();
+        } else if (sortBy.equals("likes")) {
+            return films.getSortedDirectorsFilmsByLikes(directorId).stream().toList();
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
+        }
+    }
     @Override
     public void deleteFilm(Long filmID) {
         log.info("Проверяем наличие фильма по id = {}", filmID);
