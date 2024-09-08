@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 
@@ -22,7 +23,7 @@ public class DirectorServiceImp implements DirectorService {
     @Override
     public Director createDirector(Director director) {
         if (director.getName().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.NOT_EXTENDED,"Имя режиссера должно быть заполнено");
+            throw new ValidationException("Имя режиссера должно быть заполнено");
         }
         directorRepository.createDirector(director);
         if (director.getId() == null) {
