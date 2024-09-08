@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service.Director;
+package ru.yandex.practicum.filmorate.service.director;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class DirectorServiceImp implements DirectorService {
 
 
     @Override
-    public Director createDirector(Director director) {
+    public  void createDirector(Director director) {
         if (director.getName().isBlank()) {
             throw new ValidationException("Имя режиссера должно быть заполнено");
         }
@@ -29,7 +29,6 @@ public class DirectorServiceImp implements DirectorService {
         if (director.getId() == null) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
-        return director;
     }
 
     @Override
@@ -51,11 +50,11 @@ public class DirectorServiceImp implements DirectorService {
     }
 
     @Override
-    public Director updateDirector(Director director) {
+    public void updateDirector(Director director) {
         if (director.getId() == null || director.getName() == null)
             throw new ResponseStatusException(HttpStatus.NOT_EXTENDED, "Режиссер не найден");
         directorRepository.isDirectorNotExists(director.getId());
-        return directorRepository.updateDirector(director);
+        directorRepository.updateDirector(director);
     }
 
 }

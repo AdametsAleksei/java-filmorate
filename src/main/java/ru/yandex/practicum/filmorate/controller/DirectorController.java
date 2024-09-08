@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.service.Director.DirectorService;
+import ru.yandex.practicum.filmorate.service.director.DirectorService;
 
 import java.util.Collection;
 

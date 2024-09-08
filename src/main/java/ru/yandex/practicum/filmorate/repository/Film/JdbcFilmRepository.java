@@ -186,7 +186,7 @@ public class JdbcFilmRepository implements FilmRepository {
         """;
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("director_id", directorId);
-        return (jdbc.query(sql, parameter, filmsExtractor)).values();
+        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 
 
@@ -217,6 +217,6 @@ public class JdbcFilmRepository implements FilmRepository {
         """;
         SqlParameterSource parameter = new MapSqlParameterSource()
                  .addValue("director_id", directorId);
-        return (jdbc.query(sql, parameter, filmsExtractor)).values();
+        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 }

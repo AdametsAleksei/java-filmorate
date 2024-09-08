@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.repository.Director;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.repository.mapper.DirectorExtractor;
 import ru.yandex.practicum.filmorate.repository.mapper.DirectorRowMapper;
 
 import java.util.Collection;
@@ -25,7 +25,6 @@ import java.util.Set;
 public class JdbcDirectorRepository implements DirectorRepository {
     private final NamedParameterJdbcOperations jdbc;
     private final DirectorRowMapper mapper;
-    private final DirectorExtractor extractor;
 
     @Override
     public void createDirector(Director director) {
@@ -49,7 +48,7 @@ public class JdbcDirectorRepository implements DirectorRepository {
                 WHERE DIRECTOR_ID = :director_id;
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource("director_id", id);
-        return Optional.ofNullable(jdbc.query(sql, parameter, extractor));
+        return Optional.ofNullable(jdbc.queryForObject(sql, parameter, mapper));
     }
 
     @Override
@@ -86,7 +85,10 @@ public class JdbcDirectorRepository implements DirectorRepository {
 
     @Override
     public void isDirectorNotExists(Long id) {
-        if (getDirectorById(id).isEmpty()) {
+        try {
+            getDirectorById(id).get().getName();
+        } catch (EmptyResultDataAccessException e) {
+//            Иначе не проходят тесты, если реализовывать через ExceptionController
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Режиссер с id = " + id + " не найден");
         }
     }
@@ -110,7 +112,6 @@ public class JdbcDirectorRepository implements DirectorRepository {
                     .addValue("film_id", film.getId())
                     .addValue("director_id", d.getId());
             jdbc.update(sql, parameter);
-
         }
     }
 }

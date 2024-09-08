@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service.Director;
+package ru.yandex.practicum.filmorate.service.director;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -8,7 +8,7 @@ import java.util.Collection;
 @Component
 public interface DirectorService {
 
-    Director createDirector(Director director);
+    void createDirector(Director director);
 
     Collection<Director> findAllDirectors();
 
@@ -16,5 +16,5 @@ public interface DirectorService {
 
     void deleteDirector(Long id);
 
-    Director updateDirector(Director director);
+    void updateDirector(Director director);
 }
