@@ -255,6 +255,9 @@ public class JdbcFilmRepository implements FilmRepository {
             }
         }
         HashMap<Long, HashSet<Long>> recommendations = new HashMap<>();
+        if (userIdRecomendation == 0) {
+            return new ArrayList<>();
+        }
         usersFilmsLikes.get(userIdRecomendation).removeAll(usersFilmsLikes.get(userId));
         recommendations.put(userIdRecomendation, usersFilmsLikes.get(userIdRecomendation));
         List<Film> recommendationFilms = new ArrayList<>();
