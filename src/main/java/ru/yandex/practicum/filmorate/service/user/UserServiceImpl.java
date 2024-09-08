@@ -77,5 +77,4 @@ public class UserServiceImpl implements UserService {
         log.info("Пользователь с id = {} обновлен", newUser.getId());
         return newUser;
     }
-
 }

@@ -2,11 +2,14 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.Film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.Genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
@@ -22,6 +25,7 @@ public class FilmServiceImpl implements FilmService {
     private UserRepository users;
     private MpaRepository mpaRepository;
     private GenreRepository genreRepository;
+    private DirectorRepository directorRepository;
 
     @Override
     public Collection<Film> getAll() {
@@ -41,6 +45,11 @@ public class FilmServiceImpl implements FilmService {
             throw new InternalServerException("Не удалось сохранить данные");
         }
         try {
+            directorRepository.saveDirectorsToFilm(film);
+        } catch (NotFoundException e) {
+            throw new ValidationException("Такого режиссера не существует");
+        }
+        try {
             genreRepository.saveGenre(film);
         } catch (NotFoundException e) {
             throw new ValidationException("Такого жанра не существует");
@@ -55,6 +64,7 @@ public class FilmServiceImpl implements FilmService {
         mpaRepository.isMpaExists(film.getMpa().getId());
         films.update(film);
         genreRepository.saveGenre(film);
+        directorRepository.saveDirectorsToFilm(film);
         log.info("Фильм с id = {} обновлен", film.getId());
     }
 
@@ -85,4 +95,15 @@ public class FilmServiceImpl implements FilmService {
         return films.getPopular(count).values().stream().toList();
     }
 
+    @Override
+    public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
+        directorRepository.isDirectorNotExists(directorId);
+        if (sortBy.equals("year")) {
+            return films.getSortedDirectorsFilmsByYear(directorId).stream().toList();
+        } else if (sortBy.equals("likes")) {
+            return films.getSortedDirectorsFilmsByLikes(directorId).stream().toList();
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
+        }
+    }
 }
