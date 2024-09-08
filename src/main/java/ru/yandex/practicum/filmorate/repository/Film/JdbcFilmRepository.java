@@ -189,7 +189,6 @@ public class JdbcFilmRepository implements FilmRepository {
         return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 
-
     @Override
     public Collection<Film> getSortedDirectorsFilmsByYear(Long directorId) {
         String sql = """

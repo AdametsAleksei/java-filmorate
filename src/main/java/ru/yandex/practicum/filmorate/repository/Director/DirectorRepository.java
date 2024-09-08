@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface DirectorRepository {
-
     void createDirector(Director director);
 
     Collection<Director> findAllDirectors();

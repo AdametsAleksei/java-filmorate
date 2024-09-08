@@ -19,9 +19,8 @@ import java.util.Collection;
 public class DirectorServiceImp implements DirectorService {
     DirectorRepository directorRepository;
 
-
     @Override
-    public  void createDirector(Director director) {
+    public void createDirector(Director director) {
         if (director.getName().isBlank()) {
             throw new ValidationException("Имя режиссера должно быть заполнено");
         }

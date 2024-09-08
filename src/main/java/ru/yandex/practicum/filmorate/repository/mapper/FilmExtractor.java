@@ -23,7 +23,6 @@ public class FilmExtractor implements ResultSetExtractor<Film> {
             film.setDuration(rs.getInt("DURATION"));
             film.setId(rs.getLong("FILM_ID"));
             film.setMpa(new Mpa(rs.getInt("MPA_ID"), rs.getString("MPA_NAME")));
-
             do {
                 int idGenre = rs.getInt("GENRE_ID");
                 if (idGenre != 0) {
@@ -33,10 +32,8 @@ public class FilmExtractor implements ResultSetExtractor<Film> {
                 if (idDirector != 0) {
                     film.getDirectors().add(new Director(idDirector, rs.getString("DIRECTOR_NAME")));
                 }
-
             } while (rs.next());
             }
-
         return film;
     }
 }

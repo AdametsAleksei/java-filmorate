@@ -40,18 +40,20 @@ public class FilmServiceImpl implements FilmService {
         } catch (NotFoundException e) {
             throw new ValidationException("Такого MPA не существует");
         }
-
         films.create(film);
         if (film.getId() == null) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
         try {
             directorRepository.saveDirectorsToFilm(film);
+        } catch (NotFoundException e) {
+            throw new ValidationException("Такого режиссера не существует");
+        }
+        try {
             genreRepository.saveGenre(film);
         } catch (NotFoundException e) {
             throw new ValidationException("Такого жанра не существует");
         }
-
         log.info("Фильм {} добавлен в список с id = {}", film.getName(), film.getId());
         return film;
     }
@@ -103,7 +105,5 @@ public class FilmServiceImpl implements FilmService {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
         }
-
     }
-
 }

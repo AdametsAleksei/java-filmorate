@@ -31,11 +31,4 @@ public class ErrorHandler {
         log.info("400 {}", e.getMessage());
         return new ErrorResponse(e.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
     }
-
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse handleException(final Exception e) {
-//            log.warn("Error", e);
-//            return new ErrorResponse(e.getMessage());
-//    }
 }
