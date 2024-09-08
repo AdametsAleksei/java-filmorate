@@ -151,6 +151,17 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
+    public void deleteFilm(Long id) {
+        String sql = """
+                DELETE FROM FILMS
+                WHERE FILM_ID = :film_id;
+                                                    
+                """;
+        SqlParameterSource parameter = new MapSqlParameterSource("film_id", id);
+        jdbc.update(sql, parameter);
+    }
+
+    @Override
     public void isFilmNotExists(Long id) {
         if (getById(id).isEmpty()) {
             throw new NotFoundException("Фильм с id = " + id + " не найден");

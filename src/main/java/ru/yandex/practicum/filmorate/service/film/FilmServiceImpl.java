@@ -96,6 +96,12 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public void deleteFilm(Long filmID) {
+        log.info("Проверяем наличие фильма по id = {}", filmID);
+        films.isFilmNotExists(filmID);
+        films.deleteFilm(filmID);
+    }
+    @Override
     public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
         directorRepository.isDirectorNotExists(directorId);
         if (sortBy.equals("year")) {

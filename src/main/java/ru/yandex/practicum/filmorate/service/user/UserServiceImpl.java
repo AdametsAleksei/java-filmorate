@@ -77,4 +77,11 @@ public class UserServiceImpl implements UserService {
         log.info("Пользователь с id = {} обновлен", newUser.getId());
         return newUser;
     }
+
+    @Override
+    public void deleteUser(Long userId) {
+        log.info("Проверка пользователя с id = {}", userId);
+        users.isUserNotExists(userId);
+        users.deleteUser(userId);
+    }
 }

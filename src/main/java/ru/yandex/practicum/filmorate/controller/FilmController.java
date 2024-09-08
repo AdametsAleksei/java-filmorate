@@ -41,7 +41,7 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Создание фильма: start");
-        film = filmService. create(film);
+        film = filmService.create(film);
         log.info("Создан фильм - {}", film);
         return film;
     }
@@ -67,6 +67,12 @@ public class FilmController {
         log.info("DeleteLike start");
         filmService.deleteLike(filmID, userID);
         log.info("Убран лайк фильма c ID - {}, пользователем с ID - {}", filmID, userID);
+    }
+
+    @DeleteMapping("/{filmID}")
+    public void deleteFilm(@PathVariable Long filmID) {
+        log.info("Удаление фильма по ID - {}", filmID);
+        filmService.deleteFilm(filmID);
     }
 
     @GetMapping("/director/{directorId}")

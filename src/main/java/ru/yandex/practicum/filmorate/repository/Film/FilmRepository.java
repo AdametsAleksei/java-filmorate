@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface FilmRepository {
-    Map<Long,Film> getAllFilms();
+    Map<Long, Film> getAllFilms();
 
     Optional<Film> getById(Long id);
 
@@ -21,6 +21,8 @@ public interface FilmRepository {
     void deleteLike(Long id, Long userId);
 
     Map<Long, Film> getPopular(Long count);
+
+    void deleteFilm(Long id);
 
     void isFilmNotExists(Long id);
 
