@@ -106,4 +106,11 @@ public class FilmServiceImpl implements FilmService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
         }
     }
+
+    @Override
+    public void deleteFilm(Long filmID) {
+        log.info("Проверяем наличие фильма по id = {}", filmID);
+        films.isFilmNotExists(filmID);
+        films.deleteFilm(filmID);
+    }
 }

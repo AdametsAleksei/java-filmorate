@@ -94,9 +94,9 @@ public class JdbcDirectorRepository implements DirectorRepository {
     @Override
     public void saveDirectorsToFilm(Film film) {
         String sqlDelete = """
-                           DELETE FROM FILM_DIRECTOR
-                           WHERE FILM_ID = :film_id;
-                           """;
+                DELETE FROM FILM_DIRECTOR
+                WHERE FILM_ID = :film_id;
+                """;
         SqlParameterSource parameterDelete = new MapSqlParameterSource("film_id", film.getId());
         jdbc.update(sqlDelete, parameterDelete);
         Set<Director> directors = film.getDirectors();

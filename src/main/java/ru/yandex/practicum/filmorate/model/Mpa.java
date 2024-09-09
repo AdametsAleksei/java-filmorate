@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Mpa {
-    @NotBlank private int id;
+    @NotBlank
+    private int id;
     private String name;
 }

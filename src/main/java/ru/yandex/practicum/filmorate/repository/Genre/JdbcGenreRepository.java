@@ -24,19 +24,19 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public Collection<Genre> getAll() {
         String sql = """
-                     SELECT *
-                     FROM GENRE;
-                     """;
+                SELECT *
+                FROM GENRE;
+                """;
         return jdbc.query(sql, mapper);
     }
 
     @Override
     public Optional<Genre> getById(int id) {
         String sql = """
-                     SELECT *
-                     FROM GENRE
-                     WHERE GENRE_ID = :genre_id;
-                     """;
+                SELECT *
+                FROM GENRE
+                WHERE GENRE_ID = :genre_id;
+                """;
         SqlParameterSource parameter = new MapSqlParameterSource().addValue("genre_id", id);
         return Optional.ofNullable(jdbc.queryForObject(sql, parameter, mapper));
     }
@@ -44,9 +44,9 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public void saveGenre(Film film) {
         String sqlDelete = """
-                           DELETE FROM FILM_GENRE
-                           WHERE FILM_ID = :film_id;
-                           """;
+                DELETE FROM FILM_GENRE
+                WHERE FILM_ID = :film_id;
+                """;
         SqlParameterSource parameterDelete = new MapSqlParameterSource("film_id", film.getId());
         jdbc.update(sqlDelete, parameterDelete);
         Long id = film.getId();
@@ -61,9 +61,9 @@ public class JdbcGenreRepository implements GenreRepository {
             batch[count++] = parameter;
         }
         String sqlInsert = """
-                           INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID)
-                           VALUES (:film_id, :genre_id);
-                           """;
+                INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID)
+                VALUES (:film_id, :genre_id);
+                """;
         jdbc.batchUpdate(sqlInsert, batch);
     }
 

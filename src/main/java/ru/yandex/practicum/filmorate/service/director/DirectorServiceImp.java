@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 
 import java.util.Collection;
 
-
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -55,5 +54,4 @@ public class DirectorServiceImp implements DirectorService {
         directorRepository.isDirectorNotExists(director.getId());
         directorRepository.updateDirector(director);
     }
-
 }

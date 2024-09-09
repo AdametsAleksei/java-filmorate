@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public User get(Long userID) {
         log.info("Получение пользователя с id={}", userID);
         return users.getById(userID).orElseThrow(() -> new NotFoundException(
-               "Пользователь c ID - " + userID + " не найден"));
+                "Пользователь c ID - " + userID + " не найден"));
     }
 
     @Override
@@ -76,5 +76,12 @@ public class UserServiceImpl implements UserService {
         users.update(newUser);
         log.info("Пользователь с id = {} обновлен", newUser.getId());
         return newUser;
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        log.info("Проверка пользователя с id = {}", userId);
+        users.isUserNotExists(userId);
+        users.deleteUser(userId);
     }
 }
