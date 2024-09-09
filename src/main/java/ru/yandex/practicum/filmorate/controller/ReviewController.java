@@ -26,8 +26,8 @@ public class ReviewController {
     public Review create(@Valid @RequestBody Review review) {
         log.info("Создание отзыва: start");
         System.out.println(review);
-        Review review_create = reviewService.create(review);
-        log.info("Создан пользователь - {}", review_create);
+        Review reviewСreate = reviewService.create(review);
+        log.info("Создан пользователь - {}", reviewСreate);
         return review;
     }
 
