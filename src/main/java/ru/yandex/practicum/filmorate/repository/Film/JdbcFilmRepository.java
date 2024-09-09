@@ -19,7 +19,6 @@ import java.util.*;
 @RequiredArgsConstructor
 @Repository
 public class JdbcFilmRepository implements FilmRepository {
-
     private final NamedParameterJdbcOperations jdbc;
     private final FilmExtractor filmExtractor;
     private final FilmsExtractor filmsExtractor;
@@ -121,7 +120,6 @@ public class JdbcFilmRepository implements FilmRepository {
 
     @Override
     public Map<Long, Film> getPopular(Long count) {
-
         String sql = """
                         SELECT f.FILM_ID,
                         f.NAME,

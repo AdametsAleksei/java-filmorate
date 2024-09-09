@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.repository.User;
 
-
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
