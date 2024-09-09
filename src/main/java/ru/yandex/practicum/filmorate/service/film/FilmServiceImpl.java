@@ -2,11 +2,14 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.Film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.Genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
@@ -22,6 +25,7 @@ public class FilmServiceImpl implements FilmService {
     private UserRepository users;
     private MpaRepository mpaRepository;
     private GenreRepository genreRepository;
+    private DirectorRepository directorRepository;
 
     @Override
     public Collection<Film> getAll() {
@@ -60,6 +64,7 @@ public class FilmServiceImpl implements FilmService {
         mpaRepository.isMpaExists(film.getMpa().getId());
         films.update(film);
         genreRepository.saveGenre(film);
+        directorRepository.saveDirectorsToFilm(film);
         log.info("Фильм с id = {} обновлен", film.getId());
     }
 
@@ -102,6 +107,7 @@ public class FilmServiceImpl implements FilmService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
         }
     }
+
     @Override
     public Collection<Film> getCommonFilms(Long userId, Long friendId) {
         users.isUserNotExists(userId);
