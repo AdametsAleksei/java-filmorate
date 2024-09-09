@@ -101,8 +101,8 @@ public class JdbcReviewRepository implements ReviewRepository {
                 LIMIT :COUNT;
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource()
-                .addValue("COUNT", count).
-                addValue("FILM_ID", filmId);
+                .addValue("COUNT", count)
+                .addValue("FILM_ID", filmId);
         if (filmId == 0) {
             return jdbc.query(sqlWithoutFilmId, parameter, reviewsExtractor);
         } else {
