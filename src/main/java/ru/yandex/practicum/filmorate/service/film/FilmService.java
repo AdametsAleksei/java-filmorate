@@ -24,8 +24,6 @@ public interface FilmService {
 
     void deleteFilm(Long id);
 
-
     Collection<Film> getCommonFilms(Long userId, Long friendId);
 
-    Collection<Film> getCommonFilms(Long userId, Long friendId);
 }

@@ -32,5 +32,4 @@ public interface FilmRepository {
 
     Collection<Film> getUserFilm(Long userId);
 
-    Collection<Film> getUserFilm(Long userId);
 }
