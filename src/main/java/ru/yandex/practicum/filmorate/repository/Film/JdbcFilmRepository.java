@@ -233,6 +233,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 .addValue("director_id", directorId);
         return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
+
     @Override
     public List<Film> recommendations(Long userId) {
         String sqlGetData = """

@@ -99,6 +99,7 @@ public class FilmServiceImpl implements FilmService {
     public List<Film> recommendations(Long userId) {
         return films.recommendations(userId);
     }
+
     @Override
     public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
         directorRepository.isDirectorNotExists(directorId);
