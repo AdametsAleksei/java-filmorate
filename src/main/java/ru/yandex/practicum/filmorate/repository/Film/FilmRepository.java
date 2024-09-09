@@ -40,5 +40,4 @@ public interface FilmRepository {
 
     Map<Long, Film> search(String query, String by);
 
-    Collection<Film> getUserFilm(Long userId);
 }
