@@ -24,12 +24,12 @@ public class ReviewServiceImpl implements ReviewService {
     public Review create(Review review) {
         filmService.getById(review.getFilmId());
         userService.get(review.getUserId());
-        Review review_create = reviewRepository.create(review);
-        if (review_create.getReviewId() == null) {
+        Review reviewCreate = reviewRepository.create(review);
+        if (reviewCreate.getReviewId() == null) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
-        log.info("Отзыв создан с id = {}", review_create.getReviewId());
-        return review_create;
+        log.info("Отзыв создан с id = {}", reviewCreate.getReviewId());
+        return reviewCreate;
     }
 
     @Override
@@ -55,9 +55,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Collection<Review> getAllReview(Long filmId, Long count) {
-//        if (filmId != 0) {
-//            filmService.getById(filmId);
-//        }
         return reviewRepository.getAllReview(filmId, count);
     }
 
