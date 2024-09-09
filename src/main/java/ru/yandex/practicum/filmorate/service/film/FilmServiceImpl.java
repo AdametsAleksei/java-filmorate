@@ -112,15 +112,4 @@ public class FilmServiceImpl implements FilmService {
         films.isFilmNotExists(filmID);
         films.deleteFilm(filmID);
     }
-    @Override
-    public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
-        directorRepository.isDirectorNotExists(directorId);
-        if (sortBy.equals("year")) {
-            return films.getSortedDirectorsFilmsByYear(directorId).stream().toList();
-        } else if (sortBy.equals("likes")) {
-            return films.getSortedDirectorsFilmsByLikes(directorId).stream().toList();
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
-        }
-    }
 }

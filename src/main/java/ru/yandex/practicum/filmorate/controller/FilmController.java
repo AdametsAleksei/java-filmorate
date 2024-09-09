@@ -84,13 +84,4 @@ public class FilmController {
         log.info("Удаление фильма по ID - {}", filmID);
         filmService.deleteFilm(filmID);
     }
-
-    @GetMapping("/director/{directorId}")
-    public List<Film> getSortedDirectorsFilms(@PathVariable("directorId") Long directorId,
-                                              @RequestParam(value = "sortBy", required = false) String sortBy) {
-        log.info("Запрошен вывод отсортированных фильмов");
-        List<Film> sortedFilms = filmService.getSortedDirectorsFilms(directorId, sortBy);
-        log.info("Вывод отсортированных фильмов отправлен");
-        return sortedFilms;
-    }
 }
