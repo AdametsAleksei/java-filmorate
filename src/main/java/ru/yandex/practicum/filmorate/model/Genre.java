@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Genre {
-    @NotBlank private int id;
+    @NotBlank
+    private int id;
     private String name;
 }

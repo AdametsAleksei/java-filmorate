@@ -55,5 +55,4 @@ public class DirectorServiceImp implements DirectorService {
         directorRepository.isDirectorNotExists(director.getId());
         directorRepository.updateDirector(director);
     }
-
 }
