@@ -159,7 +159,6 @@ public class JdbcFilmRepository implements FilmRepository {
         String sql = """
                 DELETE FROM FILMS
                 WHERE FILM_ID = :film_id;
-                                                    
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource("film_id", id);
         jdbc.update(sql, parameter);
