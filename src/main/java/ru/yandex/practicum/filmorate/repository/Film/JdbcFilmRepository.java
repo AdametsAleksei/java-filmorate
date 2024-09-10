@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.repository.mapper.RecommendationsExtractor;
 
 import java.sql.Date;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Slf4j

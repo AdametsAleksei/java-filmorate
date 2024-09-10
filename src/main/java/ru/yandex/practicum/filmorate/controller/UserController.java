@@ -88,7 +88,6 @@ public class UserController {
         log.info("Пользователь с ID: {} удален", userId);
     }
 
-
     @GetMapping("/{userId}/feed")
     public List<Event> getEvents(@PathVariable long userId) {
         log.info("Запрошены последние события пользователя с ID - {}", userId);
