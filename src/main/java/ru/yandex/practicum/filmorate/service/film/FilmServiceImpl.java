@@ -139,4 +139,9 @@ public class FilmServiceImpl implements FilmService {
         films.isFilmNotExists(filmID);
         films.deleteFilm(filmID);
     }
+
+    @Override
+    public Collection<Film> search(String query, String by) {
+      return films.search (query,by).values().stream().toList();
+    }
 }
