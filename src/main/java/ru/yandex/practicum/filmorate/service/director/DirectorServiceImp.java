@@ -15,7 +15,7 @@ import java.util.Collection;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class DirectorServiceImp implements DirectorService {
+public class DirectorServiceImp implements ru.yandex.practicum.filmorate.service.director.DirectorService {
     DirectorRepository directorRepository;
 
     @Override
