@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.repository.mapper.RecommendationsExtractor;
 
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -249,7 +250,8 @@ public class JdbcFilmRepository implements FilmRepository {
             if (userFilms.getKey().equals(userId)) {
                 continue;
             }
-            Set<Long> commonFilms = usersFilmsLikes.get(userId).stream().filter(userFilms.getValue()::contains).collect(Collectors.toSet());
+            Set<Long> commonFilms = usersFilmsLikes.get(userId).stream()
+                            .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
             if (commonFilms.size() > coin) {
                 coin = commonFilms.size();
                 userIdRecomendation = userFilms.getKey();
