@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.event.EventService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
@@ -93,7 +94,7 @@ public class UserController {
         log.info("Запрошены последние события пользователя с ID - {}", userId);
         return eventService.getEvents(userId);
     }
-  
+
     @GetMapping("{userID}/recommendations")
     public List<Film> recommendations(@PathVariable Long userID) {
         log.info("Запрошен список рекомендаций");
