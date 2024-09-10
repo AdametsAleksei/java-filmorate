@@ -97,6 +97,11 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> recommendations(Long userId) {
+        return films.recommendations(userId);
+    }
+
+    @Override
     public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
         directorRepository.isDirectorNotExists(directorId);
         if (sortBy.equals("year")) {
