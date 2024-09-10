@@ -87,9 +87,16 @@ public class UserController {
         log.info("Пользователь с ID: {} удален", userId);
     }
 
+
     @GetMapping("/{userId}/feed")
     public List<Event> getEvents(@PathVariable long userId) {
         log.info("Запрошены последние события пользователя с ID - {}", userId);
         return eventService.getEvents(userId);
+    }
+  
+    @GetMapping("{userID}/recommendations")
+    public List<Film> recommendations(@PathVariable Long userID) {
+        log.info("Запрошен список рекомендаций");
+        return userService.recommendations(userID);
     }
 }

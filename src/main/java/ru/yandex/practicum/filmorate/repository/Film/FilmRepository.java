@@ -25,6 +25,8 @@ public interface FilmRepository {
 
     void isFilmNotExists(Long id);
 
+    List<Film> recommendations(Long userId);
+
     Collection<Film> getSortedDirectorsFilmsByLikes(Long directorId);
 
     Collection<Film> getSortedDirectorsFilmsByYear(Long directorId);

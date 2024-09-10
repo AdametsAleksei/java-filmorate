@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -19,6 +21,8 @@ import java.util.Collection;
 public class UserServiceImpl implements UserService {
     private final UserRepository users;
     private final EventRepository eventRepository;
+    private final FilmService filmService;
+
 
     @Override
     public void addFriend(Long userID, Long friendID) {
@@ -96,6 +100,12 @@ public class UserServiceImpl implements UserService {
         users.update(newUser);
         log.info("Пользователь с id = {} обновлен", newUser.getId());
         return newUser;
+    }
+
+    @Override
+    public List<Film> recommendations(Long userId) {
+        users.isUserNotExists(userId);
+        return filmService.recommendations(userId);
     }
 
     @Override
