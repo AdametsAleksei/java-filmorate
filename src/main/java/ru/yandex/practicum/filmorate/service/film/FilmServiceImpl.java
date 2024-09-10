@@ -8,14 +8,18 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
+import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
 import ru.yandex.practicum.filmorate.repository.Film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.Genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +30,7 @@ public class FilmServiceImpl implements FilmService {
     private MpaRepository mpaRepository;
     private GenreRepository genreRepository;
     private DirectorRepository directorRepository;
+    private EventRepository eventRepository;
 
     @Override
     public Collection<Film> getAll() {
@@ -78,6 +83,14 @@ public class FilmServiceImpl implements FilmService {
     public void addLike(Long filmID, Long userId) {
         films.isFilmNotExists(filmID);
         films.addLike(filmID, userId);
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(filmID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.LIKE)
+                .operation(Event.Operation.ADD)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} поставил лайк фильму id = {}", userId, filmID);
     }
 
@@ -86,6 +99,14 @@ public class FilmServiceImpl implements FilmService {
         films.isFilmNotExists(filmID);
         users.isUserNotExists(userId);
         films.deleteLike(filmID, userId);
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(filmID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.LIKE)
+                .operation(Event.Operation.REMOVE)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} удалил лайк фильму id = {}", userId, filmID);
     }
 

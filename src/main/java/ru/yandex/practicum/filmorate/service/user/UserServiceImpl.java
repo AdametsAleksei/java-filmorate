@@ -5,22 +5,34 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.Collection;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository users;
+    private final EventRepository eventRepository;
 
     @Override
     public void addFriend(Long userID, Long friendID) {
         users.isUserNotExists(userID);
         users.isUserNotExists(friendID);
         users.addToFriends(userID, friendID);
+        Event event = Event.builder()
+                .userId(userID)
+                .entityId(friendID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.FRIEND)
+                .operation(Event.Operation.ADD)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} и пользователь с id = {} теперь друзья", userID, friendID);
     }
 
@@ -29,6 +41,14 @@ public class UserServiceImpl implements UserService {
         users.isUserNotExists(userID);
         users.isUserNotExists(friendID);
         users.deleteFromFriends(userID, friendID);
+        Event event = Event.builder()
+                .userId(userID)
+                .entityId(friendID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.FRIEND)
+                .operation(Event.Operation.REMOVE)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} и пользователь с id = {} больше не друзья", userID, friendID);
     }
 
