@@ -26,4 +26,5 @@ public interface UserRepository {
     void deleteUser(Long id);
 
     void isUserNotExists(Long id);
+
 }
