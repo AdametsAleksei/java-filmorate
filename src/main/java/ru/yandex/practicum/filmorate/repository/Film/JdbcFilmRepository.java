@@ -11,9 +11,11 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.repository.mapper.FilmExtractor;
 import ru.yandex.practicum.filmorate.repository.mapper.FilmsExtractor;
+import ru.yandex.practicum.filmorate.repository.mapper.RecommendationsExtractor;
 
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class JdbcFilmRepository implements FilmRepository {
     private final NamedParameterJdbcOperations jdbc;
     private final FilmExtractor filmExtractor;
     private final FilmsExtractor filmsExtractor;
+    private final RecommendationsExtractor recommendationsExtractor;
 
     @Override
     public Map<Long, Film> getAllFilms() {
@@ -229,5 +232,41 @@ public class JdbcFilmRepository implements FilmRepository {
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("director_id", directorId);
         return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
+    }
+
+    @Override
+    public List<Film> recommendations(Long userId) {
+        String sqlGetData = """
+                SELECT U.USER_ID, F.FILM_ID
+                FROM USERS AS U
+                LEFT JOIN POPULAR AS P ON U.USER_ID = P.USER_ID
+                LEFT JOIN FILMS AS F ON P.FILM_ID = F.FILM_ID;
+                """;
+        Map<Long, HashSet<Long>> usersFilmsLikes = jdbc.query(sqlGetData, recommendationsExtractor);
+        int coin = 0;
+        long userIdRecomendation = 0;
+        for (Map.Entry<Long, HashSet<Long>> userFilms : usersFilmsLikes.entrySet()) {
+            if (userFilms.getKey().equals(userId)) {
+                continue;
+            }
+            Set<Long> commonFilms = usersFilmsLikes.get(userId).stream().filter(userFilms.getValue()::contains).collect(Collectors.toSet());
+            if (commonFilms.size() > coin) {
+                coin = commonFilms.size();
+                userIdRecomendation = userFilms.getKey();
+            }
+        }
+        HashMap<Long, HashSet<Long>> recommendations = new HashMap<>();
+        if (userIdRecomendation == 0) {
+            return new ArrayList<>();
+        }
+        usersFilmsLikes.get(userIdRecomendation).removeAll(usersFilmsLikes.get(userId));
+        recommendations.put(userIdRecomendation, usersFilmsLikes.get(userIdRecomendation));
+        List<Film> recommendationFilms = new ArrayList<>();
+        for (Set<Long> films : recommendations.values()) {
+            for (Long film : films) {
+                recommendationFilms.add(getById(film).get());
+            }
+        }
+        return recommendationFilms;
     }
 }
