@@ -237,7 +237,6 @@ public class JdbcFilmRepository implements FilmRepository {
 
     @Override
     public Map<Long, Film> search(String query, String by) {
-        Set<Film> films = new LinkedHashSet<>();
         String sql = switch (by) {
             case "director" -> """
                     SELECT f.*,
@@ -277,7 +276,7 @@ public class JdbcFilmRepository implements FilmRepository {
                     GROUP BY f.film_id
                     ORDER BY popular DESC;
                     """;
-            case "title,director" -> """
+            case "director,title", "title,director" -> """
                     SELECT f.*,
                     COUNT(p.film_id) AS popular,
                     rm.mpa_name,
@@ -320,7 +319,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 continue;
             }
             Set<Long> commonFilms = usersFilmsLikes.get(userId).stream()
-                            .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
+                    .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
             if (commonFilms.size() > coin) {
                 coin = commonFilms.size();
                 userIdRecomendation = userFilms.getKey();

@@ -142,6 +142,6 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<Film> search(String query, String by) {
-      return films.search (query,by).values().stream().toList();
+        return films.search(query, by).values().stream().toList();
     }
 }

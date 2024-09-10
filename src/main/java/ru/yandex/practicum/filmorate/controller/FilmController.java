@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.validation.Marker;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @RestController
@@ -85,9 +84,10 @@ public class FilmController {
         log.info("Удаление фильма по ID - {}", filmID);
         filmService.deleteFilm(filmID);
     }
+
     @GetMapping("/search")
-    public Collection<Film> search (@RequestParam @NotBlank String query, @RequestParam @NotBlank String by) {
-        log.info("Пришел запрос на поиск по параметрам {}, {}",query, by);
+    public Collection<Film> search(@RequestParam @NotBlank String query, @RequestParam @NotBlank String by) {
+        log.info("Пришел запрос на поиск по параметрам {}, {}", query, by);
         return filmService.search(query, by);
     }
 }
