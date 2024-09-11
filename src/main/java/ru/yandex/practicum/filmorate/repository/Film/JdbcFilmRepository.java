@@ -451,7 +451,7 @@ public class JdbcFilmRepository implements FilmRepository {
         }
         return recommendationFilms;
     }
-  
+
     @Override
     public Collection<Film> getUserFilm(Long userId) {
         String sql = """
