@@ -17,7 +17,6 @@ import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @RequiredArgsConstructor
 @Repository
@@ -123,7 +122,7 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
-    public Map<Long, Film> getPopular(Long count) {
+    public Map<Long, Film> getPopular(int count) {
         String sql = """
                         SELECT f.FILM_ID,
                         f.NAME,
@@ -153,6 +152,118 @@ public class JdbcFilmRepository implements FilmRepository {
                 LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID;
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource("count", count);
+        return jdbc.query(sql, parameter, filmsExtractor);
+    }
+
+    @Override
+    public Map<Long, Film> getPopularByGenre(int genreId, int count) {
+        String sql = """
+                        SELECT f.FILM_ID,
+                        f.NAME,
+                        f.DESCRIPTION,
+                        f.RELEASE_DATE,
+                        f.DURATION,
+                        r.MPA_ID,
+                        r.MPA_NAME,
+                        g.GENRE_ID,
+                        g.GENRE_NAME,
+                        fd.DIRECTOR_ID,
+                        d.DIRECTOR_NAME
+                FROM (
+                        SELECT f.FILM_ID, COALESCE(countlike, 0) AS countlike
+                        FROM (SELECT p.film_id, COALESCE(COUNT(p.film_id), 0) AS countlike
+                        FROM POPULAR AS p
+                        LEFT JOIN FILM_GENRE AS o ON p.FILM_ID = o.FILM_ID
+                        WHERE o.GENRE_ID = :genre_id
+                        GROUP BY p.film_id
+                        ) AS ft
+                        LEFT JOIN FILMS AS f ON f.film_id = ft.FILM_ID
+                        ORDER BY countlike DESC
+                        LIMIT :count) AS ft
+                JOIN FILMS AS f ON ft.film_id = f.FILM_ID
+                JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                LEFT JOIN FILM_GENRE AS fg ON fg.FILM_ID = f.FILM_ID
+                LEFT JOIN GENRE AS g ON fg.genre_id = g.GENRE_ID
+                LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
+                LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID;
+                """;
+        SqlParameterSource parameter = new MapSqlParameterSource("count", count)
+                .addValue("genre_id", genreId);
+        return jdbc.query(sql, parameter, filmsExtractor);
+    }
+
+    @Override
+    public Map<Long, Film> getPopularByYear(int year, int count) {
+        String sql = """
+                        SELECT f.FILM_ID,
+                        f.NAME,
+                        f.DESCRIPTION,
+                        f.RELEASE_DATE,
+                        f.DURATION,
+                        r.MPA_ID,
+                        r.MPA_NAME,
+                        g.GENRE_ID,
+                        g.GENRE_NAME,
+                        fd.DIRECTOR_ID,
+                        d.DIRECTOR_NAME
+                FROM (
+                        SELECT f.FILM_ID, COALESCE(countlike, 0) AS countlike
+                        FROM (SELECT film_id, COALESCE(COUNT(film_id), 0) AS countlike
+                                FROM POPULAR
+                                GROUP BY film_id
+                        ) AS ft
+                        LEFT JOIN FILMS AS f ON f.film_id = ft.FILM_ID
+                        ORDER BY countlike DESC
+                        LIMIT :count) AS ft
+                JOIN FILMS AS f ON ft.film_id = f.FILM_ID
+                JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                LEFT JOIN FILM_GENRE AS fg ON fg.FILM_ID = f.FILM_ID
+                LEFT JOIN GENRE AS g ON fg.genre_id = g.GENRE_ID
+                LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
+                LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+                WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = :year;
+                """;
+        SqlParameterSource parameter = new MapSqlParameterSource("count", count)
+                .addValue("year", year);
+        return jdbc.query(sql, parameter, filmsExtractor);
+    }
+
+    @Override
+    public Map<Long, Film> getPopularByYearAndGenre(int year, int genreId, int count) {
+        String sql = """
+                        SELECT f.FILM_ID,
+                        f.NAME,
+                        f.DESCRIPTION,
+                        f.RELEASE_DATE,
+                        f.DURATION,
+                        r.MPA_ID,
+                        r.MPA_NAME,
+                        g.GENRE_ID,
+                        g.GENRE_NAME,
+                        fd.DIRECTOR_ID,
+                        d.DIRECTOR_NAME
+                FROM (
+                        SELECT f.FILM_ID, COALESCE(countlike, 0) AS countlike
+                        FROM (SELECT p.film_id, COALESCE(COUNT(p.film_id), 0) AS countlike
+                        FROM POPULAR AS p
+                        LEFT JOIN FILM_GENRE AS o ON p.FILM_ID = o.FILM_ID
+                        WHERE o.GENRE_ID = :genre_id
+                        GROUP BY p.film_id
+                        ) AS ft
+                        LEFT JOIN FILMS AS f ON f.film_id = ft.FILM_ID
+                        ORDER BY countlike DESC
+                        LIMIT :count) AS ft
+                JOIN FILMS AS f ON ft.film_id = f.FILM_ID
+                JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                LEFT JOIN FILM_GENRE AS fg ON fg.FILM_ID = f.FILM_ID
+                LEFT JOIN GENRE AS g ON fg.genre_id = g.GENRE_ID
+                LEFT JOIN FILM_DIRECTOR AS fd ON f.FILM_ID = fd.FILM_ID
+                LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+                WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = :year;
+                """;
+        SqlParameterSource parameter = new MapSqlParameterSource("count", count)
+                .addValue("year", year)
+                .addValue("genre_id", genreId);
         return jdbc.query(sql, parameter, filmsExtractor);
     }
 

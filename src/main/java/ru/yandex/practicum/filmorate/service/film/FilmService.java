@@ -18,7 +18,7 @@ public interface FilmService {
 
     void deleteLike(Long id, Long userId);
 
-    Collection<Film> getPopular(Long count);
+    Collection<Film> getPopular(int year, int genreId, int count);
 
     List<Film> recommendations(Long userId);
 
@@ -27,5 +27,4 @@ public interface FilmService {
     void deleteFilm(Long id);
 
     Collection<Film> search(String query, String by);
-
 }

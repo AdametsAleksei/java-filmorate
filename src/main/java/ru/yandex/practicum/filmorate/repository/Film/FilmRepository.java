@@ -20,7 +20,13 @@ public interface FilmRepository {
 
     void deleteLike(Long id, Long userId);
 
-    Map<Long, Film> getPopular(Long count);
+    Map<Long, Film> getPopular(int count);
+
+    Map<Long, Film> getPopularByYear(int year, int count);
+
+    Map<Long, Film> getPopularByGenre(int genre, int count);
+
+    Map<Long, Film> getPopularByYearAndGenre(int year, int genre, int count);
 
     void deleteFilm(Long id);
 
