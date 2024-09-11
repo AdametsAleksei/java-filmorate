@@ -425,6 +425,7 @@ public class JdbcFilmRepository implements FilmRepository {
         Map<Long, HashSet<Long>> usersFilmsLikes = jdbc.query(sqlGetData, recommendationsExtractor);
         int coin = 0;
         long userIdRecomendation = 0;
+        assert usersFilmsLikes != null;
         for (Map.Entry<Long, HashSet<Long>> userFilms : usersFilmsLikes.entrySet()) {
             if (userFilms.getKey().equals(userId)) {
                 continue;
@@ -463,15 +464,19 @@ public class JdbcFilmRepository implements FilmRepository {
                            f.MPA_ID,
                            r.MPA_NAME,
                            fg.GENRE_ID,
-                           g.GENRE_NAME
+                           g.GENRE_NAME,
+                           d.DIRECTOR_NAME,
+                           fd.DIRECTOR_ID
                      FROM POPULAR AS p
                      LEFT JOIN FILMS AS f ON p.FILM_ID = f.FILM_ID
                      LEFT JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
                      LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
                      LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                     LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
+                     LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID
                      WHERE p.USER_ID = :user_id;
                      """;
         SqlParameterSource parameter = new MapSqlParameterSource("user_id", userId);
-        return jdbc.query(sql, parameter, filmsExtractor).values();
+        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 }
