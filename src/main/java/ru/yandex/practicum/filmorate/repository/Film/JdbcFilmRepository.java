@@ -424,7 +424,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 """;
         Map<Long, HashSet<Long>> usersFilmsLikes = jdbc.query(sqlGetData, recommendationsExtractor);
         int coin = 0;
-        long userIdRecomendation = 0;
+        long userIdRecommendation = 0;
         assert usersFilmsLikes != null;
         for (Map.Entry<Long, HashSet<Long>> userFilms : usersFilmsLikes.entrySet()) {
             if (userFilms.getKey().equals(userId)) {
@@ -434,15 +434,15 @@ public class JdbcFilmRepository implements FilmRepository {
                     .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
             if (commonFilms.size() > coin) {
                 coin = commonFilms.size();
-                userIdRecomendation = userFilms.getKey();
+                userIdRecommendation = userFilms.getKey();
             }
         }
         HashMap<Long, HashSet<Long>> recommendations = new HashMap<>();
-        if (userIdRecomendation == 0) {
+        if (userIdRecommendation == 0) {
             return new ArrayList<>();
         }
-        usersFilmsLikes.get(userIdRecomendation).removeAll(usersFilmsLikes.get(userId));
-        recommendations.put(userIdRecomendation, usersFilmsLikes.get(userIdRecomendation));
+        usersFilmsLikes.get(userIdRecommendation).removeAll(usersFilmsLikes.get(userId));
+        recommendations.put(userIdRecommendation, usersFilmsLikes.get(userIdRecommendation));
         List<Film> recommendationFilms = new ArrayList<>();
         for (Set<Long> films : recommendations.values()) {
             for (Long film : films) {
