@@ -32,6 +32,7 @@ public interface FilmRepository {
 
     Collection<Film> getSortedDirectorsFilmsByYear(Long directorId);
 
-    Collection<Film> getUserFilm(Long userId);
+    Map<Long, Film> search(String query, String by);
 
+    Collection<Film> getUserFilm(Long userId);
 }

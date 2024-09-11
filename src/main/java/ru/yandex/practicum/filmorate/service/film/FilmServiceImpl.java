@@ -142,6 +142,11 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public Collection<Film> search(String query, String by) {
+        return films.search(query, by).values().stream().toList();
+    }
+
+    @Override
     public Collection<Film> getCommonFilms(Long userId, Long friendId) {
         users.isUserNotExists(userId);
         users.isUserNotExists(friendId);
