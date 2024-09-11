@@ -97,13 +97,13 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
-    public void addLike(Long id, Long userId) {
+    public void addLike(Long filmId, Long userId) {
         String sql = """
                 INSERT INTO POPULAR (FILM_ID, USER_ID)
                 VALUES (:film_id, :user_id)
                 """;
         SqlParameterSource parameter = new MapSqlParameterSource()
-                .addValue("film_id", id)
+                .addValue("film_id", filmId)
                 .addValue("user_id", userId);
         jdbc.update(sql, parameter);
     }
@@ -424,7 +424,8 @@ public class JdbcFilmRepository implements FilmRepository {
                 """;
         Map<Long, HashSet<Long>> usersFilmsLikes = jdbc.query(sqlGetData, recommendationsExtractor);
         int coin = 0;
-        long userIdRecomendation = 0;
+        long userIdRecommendation = 0;
+        assert usersFilmsLikes != null;
         for (Map.Entry<Long, HashSet<Long>> userFilms : usersFilmsLikes.entrySet()) {
             if (userFilms.getKey().equals(userId)) {
                 continue;
@@ -433,15 +434,15 @@ public class JdbcFilmRepository implements FilmRepository {
                     .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
             if (commonFilms.size() > coin) {
                 coin = commonFilms.size();
-                userIdRecomendation = userFilms.getKey();
+                userIdRecommendation = userFilms.getKey();
             }
         }
         HashMap<Long, HashSet<Long>> recommendations = new HashMap<>();
-        if (userIdRecomendation == 0) {
+        if (userIdRecommendation == 0) {
             return new ArrayList<>();
         }
-        usersFilmsLikes.get(userIdRecomendation).removeAll(usersFilmsLikes.get(userId));
-        recommendations.put(userIdRecomendation, usersFilmsLikes.get(userIdRecomendation));
+        usersFilmsLikes.get(userIdRecommendation).removeAll(usersFilmsLikes.get(userId));
+        recommendations.put(userIdRecommendation, usersFilmsLikes.get(userIdRecommendation));
         List<Film> recommendationFilms = new ArrayList<>();
         for (Set<Long> films : recommendations.values()) {
             for (Long film : films) {
@@ -449,5 +450,33 @@ public class JdbcFilmRepository implements FilmRepository {
             }
         }
         return recommendationFilms;
+    }
+
+    @Override
+    public Collection<Film> getUserFilm(Long userId) {
+        String sql = """
+                     SELECT p.USER_ID,
+                           f.FILM_ID,
+                           f.NAME,
+                           f.DESCRIPTION,
+                           f.RELEASE_DATE,
+                           f.DURATION,
+                           f.MPA_ID,
+                           r.MPA_NAME,
+                           fg.GENRE_ID,
+                           g.GENRE_NAME,
+                           d.DIRECTOR_NAME,
+                           fd.DIRECTOR_ID
+                     FROM POPULAR AS p
+                     LEFT JOIN FILMS AS f ON p.FILM_ID = f.FILM_ID
+                     LEFT JOIN RATING_MPA AS r ON f.MPA_ID = r.MPA_ID
+                     LEFT JOIN FILM_GENRE AS fg ON f.FILM_ID = fg.FILM_ID
+                     LEFT JOIN GENRE AS g ON fg.GENRE_ID = g.GENRE_ID
+                     LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
+                     LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID
+                     WHERE p.USER_ID = :user_id;
+                     """;
+        SqlParameterSource parameter = new MapSqlParameterSource("user_id", userId);
+        return Objects.requireNonNull(jdbc.query(sql, parameter, filmsExtractor)).values();
     }
 }

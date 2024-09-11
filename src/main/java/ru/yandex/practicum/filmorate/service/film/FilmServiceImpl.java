@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
@@ -81,6 +82,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public void addLike(Long filmID, Long userId) {
         films.isFilmNotExists(filmID);
+        users.isUserNotExists(userId);
         films.addLike(filmID, userId);
         Event event = Event.builder()
                 .userId(userId)
@@ -155,5 +157,20 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Collection<Film> search(String query, String by) {
         return films.search(query, by).values().stream().toList();
+    }
+
+    @Override
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        users.isUserNotExists(userId);
+        users.isUserNotExists(friendId);
+        try {
+            List<Film> userFilms = new ArrayList<>(films.getUserFilm(userId).stream().toList());
+            List<Film> friendFilms = new ArrayList<>(films.getUserFilm(friendId).stream().toList());
+            friendFilms.retainAll(userFilms);
+            log.info("Получены общие фильмы для пользователя с id = {} и пользователя с id = {}", userId, friendId);
+            return friendFilms;
+        } catch (NullPointerException e) {
+            throw new NotFoundException("У пользователей нет общих фильмов");
+        }
     }
 }
