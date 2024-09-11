@@ -26,4 +26,6 @@ public interface FilmService {
 
     void deleteFilm(Long id);
 
+    Collection<Film> search(String query, String by);
+
 }

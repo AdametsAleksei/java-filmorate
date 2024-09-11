@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -82,5 +83,11 @@ public class FilmController {
     public void deleteFilm(@PathVariable Long filmID) {
         log.info("Удаление фильма по ID - {}", filmID);
         filmService.deleteFilm(filmID);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> search(@RequestParam @NotBlank String query, @RequestParam @NotBlank String by) {
+        log.info("Пришел запрос на поиск по параметрам {}, {}", query, by);
+        return filmService.search(query, by);
     }
 }

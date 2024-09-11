@@ -236,6 +236,74 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     @Override
+    public Map<Long, Film> search(String query, String by) {
+        String sql = switch (by) {
+            case "director" -> """
+                    SELECT f.*,
+                    COUNT(p.film_id) AS popular,
+                    rm.mpa_name,
+                    d.director_id,
+                    d.director_name,
+                    g.genre_id,
+                    g.genre_name
+                    FROM FILMS AS f
+                    LEFT JOIN RATING_MPA AS rm ON f.mpa_id = rm.mpa_id
+                    LEFT JOIN FILM_DIRECTOR AS fd ON f.film_id = fd.film_id
+                    LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+                    LEFT JOIN POPULAR AS p ON f.film_id = p.film_id
+                    LEFT JOIN FILM_GENRE AS fg ON f.film_id = fg.film_id
+                    LEFT JOIN GENRE AS g ON fg.genre_id = g.genre_id
+                    WHERE LOWER(d.director_name) LIKE LOWER(CONCAT('%',:NAME,'%'))
+                    GROUP BY f.film_id
+                    ORDER BY popular DESC;
+                    """;
+            case "title" -> """
+                    SELECT f.*,
+                    COUNT(p.film_id) AS popular,
+                    rm.mpa_name,
+                    d.director_id,
+                    d.director_name,
+                    g.genre_id,
+                    g.genre_name
+                    FROM FILMS AS f
+                    LEFT JOIN FILM_GENRE AS fg ON f.film_id = fg.film_id
+                    LEFT JOIN GENRE AS g ON fg.genre_id = g.genre_id
+                    LEFT JOIN POPULAR AS p ON f.film_id = p.film_id
+                    LEFT JOIN RATING_MPA AS rm ON f.mpa_id = rm.mpa_id
+                    LEFT JOIN FILM_DIRECTOR AS fd ON f.film_id = fd.film_id
+                    LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+                    WHERE LOWER(f.name) LIKE LOWER(CONCAT('%',:NAME,'%'))
+                    GROUP BY f.film_id
+                    ORDER BY popular DESC;
+                    """;
+            case "director,title", "title,director" -> """
+                    SELECT f.*,
+                    COUNT(p.film_id) AS popular,
+                    rm.mpa_name,
+                    d.director_id,
+                    d.director_name,
+                    g.genre_id,
+                    g.genre_name
+                    FROM FILMS AS f
+                    LEFT JOIN FILM_GENRE AS fg ON f.film_id = fg.film_id
+                    LEFT JOIN GENRE AS g ON fg.genre_id = g.genre_id
+                    LEFT JOIN POPULAR AS p ON f.film_id = p.film_id
+                    LEFT JOIN RATING_MPA AS rm ON f.mpa_id = rm.mpa_id
+                    LEFT JOIN FILM_DIRECTOR AS fd ON f.film_id = fd.film_id
+                    LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+                    WHERE LOWER(f.name) LIKE LOWER(CONCAT('%',:NAME,'%'))
+                    OR LOWER(d.director_name) LIKE LOWER(CONCAT('%',:NAME,'%'))
+                    GROUP BY f.film_id
+                    ORDER BY popular DESC;
+                    """;
+            default -> throw new IllegalStateException("Unexpected value: " + by);
+        };
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("NAME", query);
+        return jdbc.query(sql, parameter, filmsExtractor);
+    }
+
+    @Override
     public List<Film> recommendations(Long userId) {
         String sqlGetData = """
                 SELECT U.USER_ID, F.FILM_ID
@@ -251,7 +319,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 continue;
             }
             Set<Long> commonFilms = usersFilmsLikes.get(userId).stream()
-                            .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
+                    .filter(userFilms.getValue()::contains).collect(Collectors.toSet());
             if (commonFilms.size() > coin) {
                 coin = commonFilms.size();
                 userIdRecomendation = userFilms.getKey();
