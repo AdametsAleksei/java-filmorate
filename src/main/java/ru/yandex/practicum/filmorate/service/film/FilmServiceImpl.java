@@ -18,8 +18,7 @@ import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -112,9 +111,22 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Collection<Film> getPopular(Long count) {
-        log.info("Получение списка {} популярных фильмов", count);
-        return films.getPopular(count).values().stream().toList();
+    public Collection<Film> getPopular(int year, int genreId, int count) {
+        if (year == 0 & genreId == 0) {
+            log.info("Получение топ - {} фильмов", count);
+            return films.getPopular(count).values().stream().toList();
+        } else if (year == 0 & genreId != 0) {
+            log.info("Получение топ - {} фильмов, с жанром - {}", count, genreId);
+            genreRepository.isGenreNotExist(genreId);
+            return films.getPopularByGenre(genreId, count).values().stream().toList();
+        } else if (genreId == 0) {
+            log.info("Получение топ - {} фильмов, с годом выхода - {}", count, year);
+            return films.getPopularByYear(year, count).values().stream().toList();
+        } else {
+            log.info("Получение топ - {} фильмов, с годом выхода - {} и жанром - {}", count, year, genreId);
+            genreRepository.isGenreNotExist(genreId);
+            return films.getPopularByYearAndGenre(year, genreId, count).values().stream().toList();
+        }
     }
 
     @Override
