@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service.director;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,11 +11,10 @@ import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 
 import java.util.Collection;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class DirectorServiceImp implements ru.yandex.practicum.filmorate.service.director.DirectorService {
-    DirectorRepository directorRepository;
+    private final DirectorRepository directorRepository;
 
     @Override
     public void createDirector(Director director) {

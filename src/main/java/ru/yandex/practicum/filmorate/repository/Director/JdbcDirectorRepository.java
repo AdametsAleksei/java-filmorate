@@ -93,23 +93,27 @@ public class JdbcDirectorRepository implements DirectorRepository {
 
     @Override
     public void saveDirectorsToFilm(Film film) {
+        Long filmId = film.getId();
         String sqlDelete = """
                 DELETE FROM FILM_DIRECTOR
                 WHERE FILM_ID = :film_id;
                 """;
-        SqlParameterSource parameterDelete = new MapSqlParameterSource("film_id", film.getId());
+        SqlParameterSource parameterDelete = new MapSqlParameterSource("film_id", filmId);
         jdbc.update(sqlDelete, parameterDelete);
         Set<Director> directors = film.getDirectors();
-        String sql = """
+        SqlParameterSource[] batch = new MapSqlParameterSource[directors.size()];
+        int count = 0;
+        for (Director director : directors) {
+            isDirectorNotExists(director.getId());
+            SqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue("film_id", filmId)
+                    .addValue("director_id", director.getId());
+            batch[count++] = parameter;
+        }
+        String sqlInsert = """
                 INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID)
                 VALUES (:film_id, :director_id);
                 """;
-        for (Director d : directors) {
-            isDirectorNotExists(d.getId());
-            SqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue("film_id", film.getId())
-                    .addValue("director_id", d.getId());
-            jdbc.update(sql, parameter);
-        }
+        jdbc.batchUpdate(sqlInsert, batch);
     }
 }
