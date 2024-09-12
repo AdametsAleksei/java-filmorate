@@ -2,16 +2,23 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
+import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
 import ru.yandex.practicum.filmorate.repository.Film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.Genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.Mpa.MpaRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
+import java.time.Instant;
 import java.util.*;
 
 @Slf4j
@@ -22,6 +29,8 @@ public class FilmServiceImpl implements FilmService {
     private UserRepository users;
     private MpaRepository mpaRepository;
     private GenreRepository genreRepository;
+    private DirectorRepository directorRepository;
+    private EventRepository eventRepository;
 
     @Override
     public Collection<Film> getAll() {
@@ -41,6 +50,11 @@ public class FilmServiceImpl implements FilmService {
             throw new InternalServerException("Не удалось сохранить данные");
         }
         try {
+            directorRepository.saveDirectorsToFilm(film);
+        } catch (NotFoundException e) {
+            throw new ValidationException("Такого режиссера не существует");
+        }
+        try {
             genreRepository.saveGenre(film);
         } catch (NotFoundException e) {
             throw new ValidationException("Такого жанра не существует");
@@ -55,6 +69,7 @@ public class FilmServiceImpl implements FilmService {
         mpaRepository.isMpaExists(film.getMpa().getId());
         films.update(film);
         genreRepository.saveGenre(film);
+        directorRepository.saveDirectorsToFilm(film);
         log.info("Фильм с id = {} обновлен", film.getId());
     }
 
@@ -67,7 +82,16 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public void addLike(Long filmID, Long userId) {
         films.isFilmNotExists(filmID);
+        users.isUserNotExists(userId);
         films.addLike(filmID, userId);
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(filmID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.LIKE)
+                .operation(Event.Operation.ADD)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} поставил лайк фильму id = {}", userId, filmID);
     }
 
@@ -76,13 +100,77 @@ public class FilmServiceImpl implements FilmService {
         films.isFilmNotExists(filmID);
         users.isUserNotExists(userId);
         films.deleteLike(filmID, userId);
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(filmID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.LIKE)
+                .operation(Event.Operation.REMOVE)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} удалил лайк фильму id = {}", userId, filmID);
     }
 
     @Override
-    public Collection<Film> getPopular(Long count) {
-        log.info("Получение списка {} популярных фильмов", count);
-        return films.getPopular(count).values().stream().toList();
+    public Collection<Film> getPopular(int year, int genreId, int count) {
+        if (year == 0 & genreId == 0) {
+            log.info("Получение топ - {} фильмов", count);
+            return films.getPopular(count).values().stream().toList();
+        } else if (year == 0 & genreId != 0) {
+            log.info("Получение топ - {} фильмов, с жанром - {}", count, genreId);
+            genreRepository.isGenreNotExist(genreId);
+            return films.getPopularByGenre(genreId, count).values().stream().toList();
+        } else if (genreId == 0) {
+            log.info("Получение топ - {} фильмов, с годом выхода - {}", count, year);
+            return films.getPopularByYear(year, count).values().stream().toList();
+        } else {
+            log.info("Получение топ - {} фильмов, с годом выхода - {} и жанром - {}", count, year, genreId);
+            genreRepository.isGenreNotExist(genreId);
+            return films.getPopularByYearAndGenre(year, genreId, count).values().stream().toList();
+        }
     }
 
+    @Override
+    public List<Film> recommendations(Long userId) {
+        return films.recommendations(userId);
+    }
+
+    @Override
+    public List<Film> getSortedDirectorsFilms(Long directorId, String sortBy) {
+        directorRepository.isDirectorNotExists(directorId);
+        if (sortBy.equals("year")) {
+            return films.getSortedDirectorsFilmsByYear(directorId).stream().toList();
+        } else if (sortBy.equals("likes")) {
+            return films.getSortedDirectorsFilmsByLikes(directorId).stream().toList();
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный запрос сортировки");
+        }
+    }
+
+    @Override
+    public void deleteFilm(Long filmID) {
+        log.info("Проверяем наличие фильма по id = {}", filmID);
+        films.isFilmNotExists(filmID);
+        films.deleteFilm(filmID);
+    }
+
+    @Override
+    public Collection<Film> search(String query, String by) {
+        return films.search(query, by).values().stream().toList();
+    }
+
+    @Override
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        users.isUserNotExists(userId);
+        users.isUserNotExists(friendId);
+        try {
+            List<Film> userFilms = new ArrayList<>(films.getUserFilm(userId).stream().toList());
+            List<Film> friendFilms = new ArrayList<>(films.getUserFilm(friendId).stream().toList());
+            friendFilms.retainAll(userFilms);
+            log.info("Получены общие фильмы для пользователя с id = {} и пользователя с id = {}", userId, friendId);
+            return friendFilms;
+        } catch (NullPointerException e) {
+            throw new NotFoundException("У пользователей нет общих фильмов");
+        }
+    }
 }

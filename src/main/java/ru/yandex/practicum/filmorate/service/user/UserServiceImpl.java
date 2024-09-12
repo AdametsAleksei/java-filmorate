@@ -5,22 +5,38 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
 import ru.yandex.practicum.filmorate.repository.User.UserRepository;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository users;
+    private final EventRepository eventRepository;
+    private final FilmService filmService;
 
     @Override
     public void addFriend(Long userID, Long friendID) {
         users.isUserNotExists(userID);
         users.isUserNotExists(friendID);
         users.addToFriends(userID, friendID);
+        Event event = Event.builder()
+                .userId(userID)
+                .entityId(friendID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.FRIEND)
+                .operation(Event.Operation.ADD)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} и пользователь с id = {} теперь друзья", userID, friendID);
     }
 
@@ -29,6 +45,14 @@ public class UserServiceImpl implements UserService {
         users.isUserNotExists(userID);
         users.isUserNotExists(friendID);
         users.deleteFromFriends(userID, friendID);
+        Event event = Event.builder()
+                .userId(userID)
+                .entityId(friendID)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(Event.EventType.FRIEND)
+                .operation(Event.Operation.REMOVE)
+                .build();
+        eventRepository.addEvent(event);
         log.info("Пользователь с id = {} и пользователь с id = {} больше не друзья", userID, friendID);
     }
 
@@ -51,7 +75,7 @@ public class UserServiceImpl implements UserService {
     public User get(Long userID) {
         log.info("Получение пользователя с id={}", userID);
         return users.getById(userID).orElseThrow(() -> new NotFoundException(
-               "Пользователь c ID - " + userID + " не найден"));
+                "Пользователь c ID - " + userID + " не найден"));
     }
 
     @Override
@@ -78,4 +102,16 @@ public class UserServiceImpl implements UserService {
         return newUser;
     }
 
+    @Override
+    public List<Film> recommendations(Long userId) {
+        users.isUserNotExists(userId);
+        return filmService.recommendations(userId);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        log.info("Проверка пользователя с id = {}", userId);
+        users.isUserNotExists(userId);
+        users.deleteUser(userId);
+    }
 }

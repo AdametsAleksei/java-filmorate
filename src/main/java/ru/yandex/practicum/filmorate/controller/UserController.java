@@ -6,11 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.event.EventService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.validation.Marker;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -19,6 +23,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final EventService eventService;
 
     @GetMapping("/{userID}")
     public User getById(@PathVariable("userID") long id) {
@@ -74,5 +79,24 @@ public class UserController {
         log.info("Удаление из друзей : start");
         userService.deleteFriend(userID, friendID);
         log.info("Пользователь с ID - {}, удалил из друзей пользователя с ID - {}", userID, friendID);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        log.info("Удаление пользователя по ID: {}", userId);
+        userService.deleteUser(userId);
+        log.info("Пользователь с ID: {} удален", userId);
+    }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getEvents(@PathVariable long userId) {
+        log.info("Запрошены последние события пользователя с ID - {}", userId);
+        return eventService.getEvents(userId);
+    }
+
+    @GetMapping("{userID}/recommendations")
+    public List<Film> recommendations(@PathVariable Long userID) {
+        log.info("Запрошен список рекомендаций");
+        return userService.recommendations(userID);
     }
 }
