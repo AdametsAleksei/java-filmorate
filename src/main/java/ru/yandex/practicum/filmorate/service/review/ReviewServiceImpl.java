@@ -7,10 +7,10 @@ import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
+import ru.yandex.practicum.filmorate.repository.Film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.Review.ReviewRepository;
-import ru.yandex.practicum.filmorate.service.event.EventService;
-import ru.yandex.practicum.filmorate.service.film.FilmService;
-import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.repository.User.UserRepository;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -20,13 +20,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
-    private final FilmService filmService;
-    private final UserService userService;
-    private final EventService eventService;
+    private final FilmRepository films;
+    private final UserRepository users;
+    private final EventRepository events;
 
     public Review create(Review review) {
-        filmService.getById(review.getFilmId());
-        userService.get(review.getUserId());
+        films.isFilmNotExists(review.getFilmId());
+        users.isUserNotExists(review.getUserId());
         Review reviewCreate = reviewRepository.create(review);
         if (reviewCreate.getReviewId() == null) {
             throw new InternalServerException("Не удалось сохранить данные");
@@ -38,7 +38,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .eventType(Event.EventType.REVIEW)
                 .operation(Event.Operation.ADD)
                 .build();
-        eventService.addEvent(event);
+        events.addEvent(event);
         log.info("Отзыв создан с id = {}", reviewCreate.getReviewId());
         return reviewCreate;
     }
@@ -61,7 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .eventType(Event.EventType.REVIEW)
                 .operation(Event.Operation.UPDATE)
                 .build();
-        eventService.addEvent(event);
+        events.addEvent(event);
         log.info("Отзыв с id = {} обновлен", reviewAfterUpdate.getReviewId());
         return reviewAfterUpdate;
     }
@@ -77,7 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .eventType(Event.EventType.REVIEW)
                 .operation(Event.Operation.REMOVE)
                 .build();
-        eventService.addEvent(event);
+        events.addEvent(event);
     }
 
     @Override
@@ -88,28 +88,28 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void addLike(Long reviewId, Long userId) {
         getById(reviewId);
-        userService.get(userId);
+        users.isUserNotExists(userId);
         reviewRepository.addLike(reviewId, userId);
     }
 
     @Override
     public void addDislike(Long reviewId, Long userId) {
         getById(reviewId);
-        userService.get(userId);
+        users.getById(userId);
         reviewRepository.addDislike(reviewId, userId);
     }
 
     @Override
     public void deleteLike(Long reviewId, Long userId) {
         getById(reviewId);
-        userService.get(userId);
+        users.getById(userId);
         reviewRepository.deleteLike(reviewId, userId);
     }
 
     @Override
     public void deleteDislike(Long reviewId, Long userId) {
         getById(reviewId);
-        userService.get(userId);
+        users.getById(userId);
         reviewRepository.deleteLike(reviewId, userId);
     }
 }

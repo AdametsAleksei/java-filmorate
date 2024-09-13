@@ -25,7 +25,6 @@ public class ReviewController {
     @Validated(Marker.OnCreate.class)
     public Review create(@Valid @RequestBody Review review) {
         log.info("Создание отзыва: start");
-        System.out.println(review);
         Review create = reviewService.create(review);
         log.info("Создан пользователь - {}", create);
         return review;

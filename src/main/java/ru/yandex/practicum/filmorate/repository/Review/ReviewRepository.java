@@ -6,21 +6,21 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface ReviewRepository {
-    public Review create(Review review);
+    Review create(Review review);
 
-    public Optional<Review> getById(Long id);
+    Optional<Review> getById(Long id);
 
-    public Review update(Review reviewBeforeUpdate, Review reviewAfterUpdate);
+    Review update(Review reviewBeforeUpdate, Review reviewAfterUpdate);
 
-    public void deleteById(Long id);
+    void deleteById(Long id);
 
-    public Collection<Review> getAllReview(Long filmId, Long count);
+    Collection<Review> getAllReview(Long filmId, Long count);
 
-    public void addLike(Long reviewId, Long userId);
+    void addLike(Long reviewId, Long userId);
 
-    public void addDislike(Long reviewId, Long userId);
+    void addDislike(Long reviewId, Long userId);
 
-    public void deleteLike(Long reviewId, Long userId);
+    void deleteLike(Long reviewId, Long userId);
 
-    public void deleteDislike(Long reviewId, Long userId);
+    void deleteDislike(Long reviewId, Long userId);
 }

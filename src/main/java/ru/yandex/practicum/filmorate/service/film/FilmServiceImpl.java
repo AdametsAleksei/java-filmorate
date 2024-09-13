@@ -2,14 +2,15 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.repository.Director.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.Event.EventRepository;
@@ -83,7 +84,11 @@ public class FilmServiceImpl implements FilmService {
     public void addLike(Long filmID, Long userId) {
         films.isFilmNotExists(filmID);
         users.isUserNotExists(userId);
-        films.addLike(filmID, userId);
+        try {
+            films.addLike(filmID, userId);
+        } catch (DuplicateKeyException e) {
+            throw new ResponseStatusException(HttpStatus.OK, "Оценка уже поставлена");
+        }
         Event event = Event.builder()
                 .userId(userId)
                 .entityId(filmID)
