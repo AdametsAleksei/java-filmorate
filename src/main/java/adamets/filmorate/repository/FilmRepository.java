@@ -1,6 +1,6 @@
-package adamets.filmorate.film.repository;
+package adamets.filmorate.repository;
 
-import adamets.filmorate.film.model.Film;
+import adamets.filmorate.model.Film;
 
 import java.util.Optional;
 

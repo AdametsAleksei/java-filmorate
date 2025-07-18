@@ -1,6 +1,6 @@
-package adamets.filmorate.film.service;
+package adamets.filmorate.service;
 
-import adamets.filmorate.film.model.Film;
+import adamets.filmorate.model.Film;
 
 public interface FilmService {
 

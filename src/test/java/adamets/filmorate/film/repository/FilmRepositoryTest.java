@@ -1,6 +1,8 @@
 package adamets.filmorate.film.repository;
 
-import adamets.filmorate.film.model.Film;
+import adamets.filmorate.model.Film;
+import adamets.filmorate.repository.FilmRepository;
+import adamets.filmorate.repository.InMemoryFilmRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

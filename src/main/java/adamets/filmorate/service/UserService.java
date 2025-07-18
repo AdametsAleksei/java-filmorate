@@ -1,6 +1,6 @@
-package adamets.filmorate.user.service;
+package adamets.filmorate.service;
 
-import adamets.filmorate.user.model.User;
+import adamets.filmorate.model.User;
 
 public interface UserService {
 

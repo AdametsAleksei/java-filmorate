@@ -1,7 +1,7 @@
-package adamets.filmorate.film.controller;
+package adamets.filmorate.controller;
 
-import adamets.filmorate.film.model.Film;
-import adamets.filmorate.film.service.FilmService;
+import adamets.filmorate.model.Film;
+import adamets.filmorate.service.FilmService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;

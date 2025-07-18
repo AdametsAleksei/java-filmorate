@@ -1,4 +1,4 @@
-package adamets.filmorate.film.model;
+package adamets.filmorate.model;
 
 import adamets.filmorate.exceptions.customValidAnnotation.MinDate;
 import jakarta.validation.constraints.NotEmpty;
@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
-
 
 @Data
 @AllArgsConstructor

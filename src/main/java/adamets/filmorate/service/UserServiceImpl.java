@@ -1,8 +1,8 @@
-package adamets.filmorate.user.service;
+package adamets.filmorate.service;
 
 import adamets.filmorate.exceptions.NotFoundException;
-import adamets.filmorate.user.model.User;
-import adamets.filmorate.user.repository.UserRepository;
+import adamets.filmorate.model.User;
+import adamets.filmorate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

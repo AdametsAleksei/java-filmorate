@@ -1,6 +1,6 @@
-package adamets.filmorate.user.repository;
+package adamets.filmorate.repository;
 
-import adamets.filmorate.user.model.User;
+import adamets.filmorate.model.User;
 
 import java.util.Optional;
 

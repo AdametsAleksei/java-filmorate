@@ -1,8 +1,9 @@
 package adamets.filmorate.film.service;
 
 import adamets.filmorate.exceptions.NotFoundException;
-import adamets.filmorate.film.model.Film;
-import adamets.filmorate.film.repository.FilmRepository;
+import adamets.filmorate.model.Film;
+import adamets.filmorate.repository.FilmRepository;
+import adamets.filmorate.service.FilmServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

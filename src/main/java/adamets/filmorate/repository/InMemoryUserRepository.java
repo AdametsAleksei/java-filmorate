@@ -1,6 +1,6 @@
-package adamets.filmorate.user.repository;
+package adamets.filmorate.repository;
 
-import adamets.filmorate.user.model.User;
+import adamets.filmorate.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;

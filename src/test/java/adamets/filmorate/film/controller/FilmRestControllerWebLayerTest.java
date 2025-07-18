@@ -1,8 +1,9 @@
 package adamets.filmorate.film.controller;
 
+import adamets.filmorate.controller.FilmRestController;
 import adamets.filmorate.exceptions.NotFoundException;
-import adamets.filmorate.film.model.Film;
-import adamets.filmorate.film.service.FilmService;
+import adamets.filmorate.model.Film;
+import adamets.filmorate.service.FilmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

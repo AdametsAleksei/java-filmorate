@@ -1,0 +1,1 @@
+![DB schema](DB_schema.png)
