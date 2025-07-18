@@ -29,17 +29,17 @@ class FilmServiceTest {
 
     @Test
     @DisplayName("Получение списка из нескольких элементов")
-    void givenListOfTwoFilms_whenFindAllFilms_shouldReturnListOfTwoFilms() {
+    void givenListOfTwoFilms_whenGetAllFilmsFilms_shouldReturnListOfTwoFilms() {
 
         //given
-        Film film1 = new Film(1, "Terminator", "Very brutal film",
+        Film film1 = new Film(1L, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
-        Film film2 = new Film(2, "asdsa", "asd", LocalDate.now(), 10);
+        Film film2 = new Film(2L, "asdsa", "asd", LocalDate.now(), 10);
         when(filmRepository.findAll())
                 .thenReturn(List.of(film1, film2));
 
         //when
-        Iterable<Film> list = filmService.findAll();
+        Iterable<Film> list = filmService.getAllFilms();
 
         //then
         assertThat(list).containsExactly(film1, film2);
@@ -49,14 +49,14 @@ class FilmServiceTest {
 
     @Test
     @DisplayName("Получение пустого списка")
-    void givenEmptySource_whenFindAll_thenEmptyListRetrieved() {
+    void givenEmptySource_whenFindAll_Films_thenEmptyListRetrieved() {
 
         //given
         when(filmRepository.findAll())
                 .thenReturn(List.of());
 
         //when
-        Iterable<Film> list = filmService.findAll();
+        Iterable<Film> list = filmService.getAllFilms();
 
         //then
         assertThat(list).isEmpty();
@@ -71,7 +71,7 @@ class FilmServiceTest {
     void givenValidFilm_whenCreateFilm_thenCreatedFilmRetrieved() {
 
         //given
-        Film film = new Film(1, "Terminator", "Very brutal film",
+        Film film = new Film(1L, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
         when(filmRepository.createFilm(film))
                 .thenReturn(Optional.of(film));
@@ -90,7 +90,7 @@ class FilmServiceTest {
     void givenInvalidFilm_whenCreateFilm_thenRuntimeException() {
 
         //given
-        Film film = new Film(1, "Terminator", "Very brutal film",
+        Film film = new Film(1L, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
         when(filmRepository.createFilm(film))
                 .thenReturn(Optional.empty());
@@ -107,7 +107,7 @@ class FilmServiceTest {
     void givenValidFilm_whenUpdateFilm_thenUpdatedFilmRetrieved() {
 
         //given
-        Film film = new Film(1, "Terminator", "Very brutal film",
+        Film film = new Film(1L, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
         when(filmRepository.updateFilm(film))
                 .thenReturn(Optional.of(film));
@@ -127,7 +127,7 @@ class FilmServiceTest {
     void givenInvalidFilm_whenUpdatedFilm_thenThrownNotFoundException() {
 
         //given
-        Film film = new Film(100, "Terminator", "Very brutal film",
+        Film film = new Film(100L, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
         when(filmRepository.updateFilm(film))
                 .thenReturn(Optional.empty());
@@ -148,7 +148,7 @@ class FilmServiceTest {
     void givenValidFilmId_whenGetFilmById_thenFilmRetrieved() {
 
         //given
-        Integer id = 1;
+        Long id = 1L;
         Film film = new Film(id, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
         when(filmRepository.getById(id)).thenReturn(Optional.of(film));
@@ -168,7 +168,7 @@ class FilmServiceTest {
     void givenInvalidFilmId_whenGetFilmById_thenThrownNotFoundException() {
 
         //given
-        Integer id = 1;
+        Long id = 1L;
         Film film = new Film(id, "Terminator", "Very brutal film",
                 LocalDate.of(1984, 10, 26), 150);
         when(filmRepository.getById(id))

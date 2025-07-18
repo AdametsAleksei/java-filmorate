@@ -32,7 +32,7 @@ class FilmRepositoryTest {
     void givenInvalidId_whenFindById_thenEmptyRetrieved() {
 
         //given
-        Integer invalidId = -1;
+        Long invalidId = -1L;
 
         //when
         Optional<Film> film = this.filmRepository.getById(invalidId);
@@ -51,7 +51,7 @@ class FilmRepositoryTest {
         Object result = method.invoke(this.filmRepository);
 
         //then
-        assertThat(result).isEqualTo(1);
+        assertThat(result).isEqualTo(1L);
     }
 
     @Test
@@ -113,7 +113,7 @@ class FilmRepositoryTest {
     void givenInvalidIdFilmForUpdate_whenUpdateFilm_thenEmptyRetrieved() {
 
         //given
-        Film filmOld = new Film(100, "Терминатор", "Очень крутой фильм",
+        Film filmOld = new Film(100L, "Терминатор", "Очень крутой фильм",
                 LocalDate.of(1984, 10, 26), 150);
 
         //when
