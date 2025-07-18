@@ -3,6 +3,7 @@ package adamets.filmorate.film.service;
 import adamets.filmorate.exceptions.NotFoundException;
 import adamets.filmorate.film.model.Film;
 import adamets.filmorate.film.repository.FilmRepository;
+import adamets.filmorate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Service;
 public class FilmServiceImpl implements FilmService {
 
     private final FilmRepository filmRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public Iterable<Film> findAll() {
+    public Iterable<Film> getAllFilms() {
         return this.filmRepository.findAll();
     }
 
@@ -26,16 +28,39 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film updateFilm(Film film) {
-        return this.filmRepository.updateFilm(film).orElseThrow(
-                () -> new NotFoundException(String.format("Фильм с таким ID - %s не найден", film.getId()))
-        );
+        return this.filmRepository.updateFilm(film)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Фильм с таким ID - %s не найден", film.getId())));
     }
 
     @Override
-    public Film getById(Integer id) {
-        return this.filmRepository.getById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Фильм с таким ID - %s не найден", id))
-        );
+    public Film getById(Long filmId) {
+        return this.filmRepository.getById(filmId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Фильм с таким ID - %s не найден", filmId)));
+    }
+
+    @Override
+    public void addLike(Long filmId, Long userId) {
+        this.filmRepository.getById(filmId).orElseThrow(() -> new NotFoundException(
+                String.format("Фильм с таким ID - %s не найден", filmId)));
+        this.userRepository.getUserById(userId).orElseThrow(() -> new NotFoundException(
+                String.format("User with ID - %s not found", userId)));
+        this.filmRepository.addLike(filmId, userId);
+    }
+
+    @Override
+    public void removeLike(Long filmId, Long userId) {
+        this.filmRepository.getById(filmId).orElseThrow(() -> new NotFoundException(
+                String.format("Фильм с таким ID - %s не найден", filmId)));
+        this.userRepository.getUserById(userId).orElseThrow(() -> new NotFoundException(
+                String.format("User with ID - %s not found", userId)));
+        this.filmRepository.removeLike(filmId, userId);
+    }
+
+    @Override
+    public Iterable<Film> getPopularFilms(int count) {
+        return this.filmRepository.getPopularFilms(count);
     }
 
 }

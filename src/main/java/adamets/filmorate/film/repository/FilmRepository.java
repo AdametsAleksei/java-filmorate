@@ -12,5 +12,11 @@ public interface FilmRepository {
 
     Optional<Film> updateFilm(Film film);
 
-    Optional<Film> getById(Integer id);
+    Optional<Film> getById(Long id);
+
+    void addLike(Long filmId, Long userId);
+
+    void removeLike(Long filmId, Long userId);
+
+    Iterable<Film> getPopularFilms(int count);
 }

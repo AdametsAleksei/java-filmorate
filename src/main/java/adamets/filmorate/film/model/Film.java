@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Film {
 
-    private Integer id;
+    private Long id;
 
     @NotEmpty(message = "Не может быть пустым")
     private String name;
@@ -27,5 +27,4 @@ public class Film {
 
     @Positive(message = "Не может быть отрицательной")
     private Integer duration;
-
 }

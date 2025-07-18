@@ -4,11 +4,17 @@ import adamets.filmorate.film.model.Film;
 
 public interface FilmService {
 
-    Iterable<Film> findAll();
+    Iterable<Film> getAllFilms();
 
     Film createFilm(Film film);
 
     Film updateFilm(Film film);
 
-    Film getById(Integer id);
+    Film getById(Long id);
+
+    void addLike(Long filmId, Long userId);
+
+    void removeLike(Long filmId, Long userId);
+
+    Iterable<Film> getPopularFilms(int count);
 }

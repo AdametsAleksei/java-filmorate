@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Data
 public class User {
 
-    Integer id;
+    Long id;
 
     @Email
     String email;
