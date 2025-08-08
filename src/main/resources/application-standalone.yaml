@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema.sql
+      data-locations:
+        - classpath:sql/users.sql
+        - classpath:sql/films.sql
+        - classpath:sql/data.sql
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc.batch_size: 50
+        order_inserts: true
+        order_updates: true
+        jdbc.batch_versioned_data: true
+        format_sql: true
+        generate_statistics: true
+
+server:
+  port: 8080
+
+logging:
+  file:
+    name: app.log
+  pattern:
+    dateformat: yyyy-MM-dd
+  level:
+    org.springframework.jdbc.datasource.init.ScriptUtils: info
+#    org.springframework.boot.autoconfigure: debug
+    adamets.filmorate: debug
+    sql: info
+    root: info
+    org.hibernate:
+      sql: debug
+      type.descriptor.sql.BasicBinder: trace
+      stat: debug
+#    org.hibernate.engine.transaction.internal: debug
