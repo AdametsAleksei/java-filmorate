@@ -26,16 +26,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User updateUser(User user) {
         return this.userRepository.save(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Iterable<User> getAllUsers() {
         return this.userRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserById(Long userId) {
         return this.userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(

@@ -3,18 +3,15 @@ package adamets.filmorate.film.model;
 import adamets.filmorate.genre.Genre;
 import adamets.filmorate.mpa.Mpa;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "films", schema = "films")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -42,6 +39,5 @@ public class Film {
             schema = "films",
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    @Builder.Default
-    private Set<Genre> genres = new HashSet<>();
+    private Set<Genre> genres;
 }

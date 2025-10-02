@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 public record FilmCreateDto(@NotEmpty(message = "Не может быть пустым")
                             String name,
@@ -19,5 +19,5 @@ public record FilmCreateDto(@NotEmpty(message = "Не может быть пус
                             @Positive(message = "Не может быть отрицательной")
                             Integer duration,
                             Mpa mpa,
-                            Set<Genre> genres) {
+                            LinkedHashSet<Genre> genres) {
 }

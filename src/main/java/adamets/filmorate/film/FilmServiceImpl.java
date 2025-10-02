@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +26,7 @@ public class FilmServiceImpl implements FilmService {
     private final FilmMapper filmMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Iterable<Film> getAllFilms() {
         return this.filmRepository.findAllWithMpaAndGenresOrderById();
     }
@@ -37,7 +36,7 @@ public class FilmServiceImpl implements FilmService {
     public FilmFullDto createFilm(FilmCreateDto film) {
         Film entity = filmMapper.fromCreateDtoToFilm(film);
         entity.setMpa(mpaService.findById(film.mpa().getId()));
-        Set<Genre> newGenres = Optional.ofNullable(film.genres()).orElse(Collections.emptySet());
+        Set<Genre> newGenres = Optional.ofNullable(film.genres()).orElseGet(LinkedHashSet::new);
         validateGenres(newGenres,
                 genreService.findAllById(newGenres.stream()
                         .map(Genre::getId)
@@ -50,13 +49,13 @@ public class FilmServiceImpl implements FilmService {
     @Override
     @Transactional
     public FilmFullDto updateFilm(FilmUpdateDto film) {
-        Set<Genre> newGenres = Optional.ofNullable(film.genres()).orElse(Collections.emptySet());
+        Set<Genre> newGenres = Optional.ofNullable(film.genres()).orElseGet(LinkedHashSet::new);
         validateGenres(newGenres,
                 genreService.findAllById(newGenres.stream()
-                .map(Genre::getId)
-                .toList())
+                        .map(Genre::getId)
+                        .toList())
         );
-        Film oldFilm = this.filmRepository.findById(film.id())
+        Film oldFilm = this.filmRepository.findByIdWithMpaAndGenres(film.id())
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Фильм с таким ID - %d не найден", film.id())));
         return filmMapper.fromFilmToFullFilmDto(this.filmRepository.save(
@@ -66,7 +65,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     @Transactional(readOnly = true)
     public FilmFullDto getById(Long filmId) {
-        return filmMapper.fromFilmToFullFilmDto(this.filmRepository.findByIdWithMpaAndGenres(filmId)
+        return filmMapper.fromFilmToFullFilmDto(this.filmRepository.findById(filmId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Фильм с таким ID - %s не найден", filmId))));
     }
